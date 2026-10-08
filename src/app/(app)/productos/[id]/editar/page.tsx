@@ -1,0 +1,62 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/db';
+import { requirePermissionOrRedirect } from '@/lib/auth/guards';
+import { ProductForm } from '../../producto-form';
+
+/** RF-044: modificar un producto o servicio. */
+export default async function EditarProductoPage({ params }: PageProps<'/productos/[id]/editar'>) {
+  await requirePermissionOrRedirect('products:write');
+  const { id } = await params;
+
+  const producto = await prisma.product.findUnique({
+    where: { id },
+    include: { category: { select: { isActive: true } } },
+  });
+  if (!producto) notFound();
+
+  // La categoría propia se ofrece aunque esté inactiva; si no, no se podría
+  // guardar el producto sin cambiarla de categoría.
+  const categorias = await prisma.productCategory.findMany({
+    where:
+      producto.categoryId === null
+        ? { isActive: true }
+        : producto.category?.isActive
+          ? { isActive: true }
+          : { id: producto.categoryId },
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true },
+  });
+
+  return (
+    <div className="mx-auto max-w-3xl space-y-6">
+      <div>
+        <Link href={`/productos/${producto.id}`} className="text-sm font-medium text-minerva-red hover:text-minerva-red-dark">
+          ← {producto.name}
+        </Link>
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-minerva-black">
+          Editar producto
+        </h1>
+      </div>
+
+      <div className="rounded-lg border border-minerva-border bg-minerva-white p-6 shadow-sm">
+        <ProductForm
+          categories={categorias}
+          product={{
+            id: producto.id,
+            code: producto.code,
+            name: producto.name,
+            description: producto.description,
+            isService: producto.isService,
+            // Decimal de Prisma llega como Decimal; el input necesita texto.
+            price: producto.price.toString(),
+            taxRate: producto.taxRate.toString(),
+            currency: producto.currency,
+            unit: producto.unit,
+            categoryId: producto.categoryId ?? '',
+          }}
+        />
+      </div>
+    </div>
+  );
+}

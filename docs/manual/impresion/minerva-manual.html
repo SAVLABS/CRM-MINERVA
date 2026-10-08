@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual de uso — CRM Minerva Consultores</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body {
+  margin: 0 auto;
+  padding: 32px 40px 64px;
+  max-width: 46rem;
+  font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+  font-size: 11.5pt;
+  line-height: 1.55;
+  color: #1a1a1a;
+  background: #fff;
+}
+h1, h2, h3, h4 {
+  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  line-height: 1.25;
+  color: #111;
+}
+h1 { font-size: 22pt; margin: 0 0 4pt; }
+h2 {
+  font-size: 15pt;
+  margin: 22pt 0 8pt;
+  padding-bottom: 4pt;
+  border-bottom: 2px solid #b3122c;
+  break-after: avoid;
+}
+h3 { font-size: 12.5pt; margin: 18pt 0 6pt; break-after: avoid; }
+h4 { font-size: 11.5pt; margin: 14pt 0 4pt; break-after: avoid; }
+p { margin: 0 0 8pt; }
+ul, ol { margin: 0 0 10pt; padding-left: 20pt; }
+li { margin-bottom: 3pt; }
+pre {
+  background: #f5f5f7;
+  border: 1px solid #e2e2e6;
+  border-radius: 4px;
+  padding: 8pt 10pt;
+  overflow-x: auto;
+  break-inside: avoid;
+  font-size: 9.5pt;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9.5pt;
+  background: #f3f3f5;
+  padding: 0 3px;
+  border-radius: 3px;
+}
+p.nota {
+  border-left: 3px solid #b3122c;
+  background: #fbf5f6;
+  padding: 7pt 10pt;
+  margin: 10pt 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10pt 0 14pt;
+  font-size: 10pt;
+  break-inside: avoid;
+}
+th, td {
+  border: 1px solid #d8d8dc;
+  padding: 4pt 6pt;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: #f5f5f7; font-weight: 600; }
+a { color: #b3122c; text-decoration: none; }
+.capitulo { break-before: page; }
+.capitulo:first-of-type { break-before: auto; }
+.portada { text-align: center; margin: 60pt 0 0; }
+.portada .sub { color: #555; font-size: 12pt; }
+.indice { font-size: 10.5pt; }
+.indice li { margin-bottom: 4pt; }
+@page { size: A4; margin: 18mm 16mm; }
+@media print {
+  body { max-width: none; padding: 0; font-size: 10.5pt; }
+  .indice a { color: inherit; }
+}
+</style>
+</head>
+<body>
+<div class="portada">
+  <h1>Manual de uso</h1>
+  <p class="sub">CRM Minerva Consultores</p>
+  <p class="sub">Versión 1.0 · 5 de octubre de 2026</p>
+</div>
+<nav class="indice">
+  <h2 id="indice">Contenido</h2>
+  <ol>
+<li><a href="#sec-1-manual-de-usuario-minerva-crm">Manual de usuario · Minerva CRM</a></li>
+<li><a href="#sec-2-1-acceso-usuarios-y-roles">1. Acceso, usuarios y roles</a></li>
+<li><a href="#sec-3-2-clientes">2. Clientes</a></li>
+<li><a href="#sec-4-3-contactos">3. Contactos</a></li>
+<li><a href="#sec-5-4-productos-y-servicios">4. Productos y servicios</a></li>
+<li><a href="#sec-6-5-oportunidades">5. Oportunidades</a></li>
+<li><a href="#sec-7-6-pipeline-de-ventas">6. Pipeline de ventas</a></li>
+<li><a href="#sec-8-7-actividades">7. Actividades</a></li>
+<li><a href="#sec-9-8-cotizaciones">8. Cotizaciones</a></li>
+<li><a href="#sec-10-9-documento-de-cotizacion">9. Documento de cotización</a></li>
+<li><a href="#sec-11-10-panel-de-metricas">10. Panel de métricas</a></li>
+<li><a href="#sec-12-11-reportes">11. Reportes</a></li>
+<li><a href="#sec-13-12-busqueda-y-filtrado">12. Búsqueda y filtrado</a></li>
+<li><a href="#sec-14-apendice-a-glosario">Apéndice A · Glosario</a></li>
+<li><a href="#sec-14-apendice-b-roles-y-permisos">Apéndice B · Roles y permisos</a></li>
+<li><a href="#sec-14-apendice-c-estados-y-transiciones">Apéndice C · Estados y transiciones</a></li>
+<li><a href="#sec-14-apendice-d-reglas-de-fechas-y-monedas">Apéndice D · Reglas de fechas y monedas</a></li>
+<li><a href="#sec-14-apendice-e-atajos-y-consejos-de-uso">Apéndice E · Atajos y consejos de uso</a></li>
+<li><a href="#sec-14-apendice-f-preguntas-frecuentes-generales">Apéndice F · Preguntas frecuentes generales</a></li>
+  </ol>
+</nav>
+<section class="capitulo"><h1 id="sec-1-manual-de-usuario-minerva-crm">Manual de usuario · Minerva CRM</h1>
+<p>Este manual explica cómo se usa el sistema, módulo por módulo. Está escrito para quien opera el CRM en el día a día: personal comercial, consultas y la persona que administra la plataforma.</p>
+<h2 id="sec-1-como-esta-organizado">Cómo está organizado</h2>
+<table><thead><tr><th>Capítulo</th><th>Módulo</th><th>Contenido</th></tr></thead><tbody><tr><td><a href="#sec-2-1-acceso-usuarios-y-roles">1. Acceso, usuarios y roles</a></td><td>Acceso</td><td>Entrar, recuperar contraseña, perfiles, roles y permisos</td></tr><tr><td><a href="#sec-3-2-clientes">2. Clientes</a></td><td>RF-02</td><td>Ficha, identificación, contactos y datos del cliente</td></tr><tr><td><a href="#sec-4-3-contactos">3. Contactos</a></td><td>RF-03</td><td>Personas de la cuenta y contacto principal</td></tr><tr><td><a href="#sec-5-4-productos-y-servicios">4. Productos y servicios</a></td><td>RF-04</td><td>Catálogo, precios, impuestos y categorías</td></tr><tr><td><a href="#sec-6-5-oportunidades">5. Oportunidades comerciales</a></td><td>RF-05</td><td>Datos, monto, responsable, cierre y pérdida</td></tr><tr><td><a href="#sec-7-6-pipeline-de-ventas">6. Pipeline de ventas</a></td><td>RF-06</td><td>Tablero por etapas y avance de la oportunidad</td></tr><tr><td><a href="#sec-8-7-actividades">7. Actividades y seguimiento</a></td><td>RF-07</td><td>Tareas, llamadas, reuniones y su seguimiento</td></tr><tr><td><a href="#sec-9-8-cotizaciones">8. Cotizaciones</a></td><td>RF-08</td><td>Creación, líneas, totales, estados e historial</td></tr><tr><td><a href="#sec-10-9-documento-de-cotizacion">9. Documento de cotización</a></td><td>RF-09</td><td>Impresión y guardado en PDF</td></tr><tr><td><a href="#sec-11-10-panel-de-metricas">10. Panel y métricas</a></td><td>RF-10</td><td>Cuadros, períodos, gráficas y etapas</td></tr><tr><td><a href="#sec-12-11-reportes">11. Reportes</a></td><td>RF-11</td><td>Consultas y exportación a CSV</td></tr><tr><td><a href="#sec-13-12-busqueda-y-filtrado">12. Búsqueda y filtrado</a></td><td>RF-12</td><td>Buscar y filtrar en cada listado, y combinar criterios</td></tr><tr><td><a href="#sec-14-apendice-a-glosario">Apéndices</a></td><td>—</td><td>A. Glosario · B. Roles y permisos · C. Estados y transiciones · D. Reglas de fechas y monedas · E. Atajos y consejos · F. Preguntas frecuentes</td></tr></tbody></table>
+<h2 id="sec-1-convenciones">Convenciones</h2>
+<ul><li>Los menús y botones que aparecen en pantalla se escriben entre corchetes: <code>[Clientes]</code>, <code>[Nueva oportunidad]</code>, <code>[Guardar]</code>.</li><li>Las rutas se indican cuando ayudan a llegar a una pantalla: <code>/cotizaciones</code>.</li><li>Los campos obligatorios se marcan con <strong>obligatorio</strong>. El sistema avisa con un mensaje rojo debajo del campo si falta algo.</li><li><strong>Nota:</strong> los recuadros señalan algo que conviene saber antes de empezar para evitar errores.</li><li>Las fechas se escriben como <code>dd/mm/aaaa</code> y los montos con el símbolo de la moneda: <code>₡1 500 000,00</code> para colones, <code>USD 500,00</code> para dólares.</li></ul>
+<h2 id="sec-1-reglas-que-aplican-a-todo-el-sistema">Reglas que aplican a todo el sistema</h2>
+<ol><li><strong>Las monedas nunca se suman entre sí.</strong> Colones y dólares son columnas separadas. Si necesita un total único, use una sola moneda en el registro.</li><li><strong>Los filtros se conservan en la barra de direcciones.</strong> Puede copiar el enlace de una pantalla filtrada y compartirlo: abre con el mismo filtro.</li><li><strong>Cada usuario solo ve lo que su rol permite.</strong> Si un menú o un botón no aparece, es que el rol no tiene ese permiso (ver capítulo 1).</li><li><strong>Casi nada se borra.</strong> Clientes, contactos, productos y oportunidades se desactivan, no se eliminan, para que el historial siga completo. Lo único que se elimina es una cotización que sigue en <strong>borrador</strong>, y eso pide confirmación.</li><li><strong>Nada se guarda solo.</strong> Todo cambio requiere <code>[Guardar]</code>; si cierra la pantalla sin guardar, se pierde lo escrito.</li></ol>
+<h2 id="sec-1-version-imprimible">Versión imprimible</h2>
+<p>Para leer o imprimir el manual completo en un solo archivo:</p>
+<pre data-lenguaje="bash"><code>npm run manual</code></pre>
+<p>Genera <code>docs/manual/impresion/minerva-manual.html</code>, con índice, todos los capítulos y estilos de impresión en A4. En el navegador, use <code>[Cmd]</code>+<code>P</code> (macOS) o <code>[Ctrl]</code>+<code>P</code> (Windows) y elija <em>Guardar como PDF</em>.</p></section>
+<section class="capitulo"><h1 id="sec-2-1-acceso-usuarios-y-roles">1. Acceso, usuarios y roles</h1>
+<h2 id="sec-2-1-1-entrar-al-sistema">1.1 Entrar al sistema</h2>
+<ol><li>Abra la dirección del sistema en el navegador.</li><li>Escriba su <strong>correo electrónico</strong> y su <strong>contraseña</strong>.</li><li>Pulse <code>[Entrar]</code>.</li></ol>
+<p>Si la pantalla muestra <em>"Correo o contraseña incorrectos"</em>, revise que el correo esté bien escrito (sin espacios al final) y que la contraseña coincida exactamente: <strong>distingue mayúsculas</strong>. Si el usuario está desactivado, el aviso es <em>"Tu usuario está desactivado. Contactá al administrador."</em></p>
+<p class="nota"><strong>Nota:</strong> la sesión dura 7 días desde el momento de entrar. Si al volver a la pantalla aparece el login, es porque se venció: entre de nuevo. El trabajo que no se había guardado se pierde, así que guarde antes de dejar la pantalla abierta por mucho tiempo.</p>
+<h2 id="sec-2-1-2-recuperar-la-contrasena">1.2 Recuperar la contraseña</h2>
+<ol><li>En el login, pulse <code>[¿Olvidó su contraseña?]</code>.</li><li>Escriba su correo y pulse <code>[Enviar enlace]</code>.</li><li>Si el correo está registrado, recibirá un <strong>enlace</strong> que abre la pantalla <code>[Restablecer contraseña]</code>. El enlace vence <strong>1 hora</strong> después de enviarlo y solo sirve una vez.</li><li>Escriba la nueva contraseña dos veces y pulse <code>[Guardar]</code>. El sistema cierra todas las sesiones abiertas de ese usuario, incluida la suya.</li></ol>
+<p class="nota"><strong>Nota:</strong> aunque el correo no exista, la pantalla responde lo mismo. Es intencionado: no se confirma qué correos están registrados.</p>
+<h2 id="sec-2-1-3-la-pantalla-de-inicio-panel">1.3 La pantalla de inicio (Panel)</h2>
+<p>Al entrar, el sistema abre en el <strong>Panel</strong>, con los números del negocio:</p>
+<ul><li><strong>Ahora mismo</strong>: clientes registrados, oportunidades abiertas, oportunidades ganadas, cotizaciones generadas, cotizaciones aceptadas y actividades pendientes. Son conteos del estado actual, no del mes.</li><li><strong>Período</strong>: botones de <code>Hoy</code>, <code>Últimos 7/30/90 días</code>, <code>Este mes</code>, <code>Este año</code> y <code>Todo</code>, más un rango personalizado con <code>Desde</code> y <code>Hasta</code>.</li><li><strong>Ventas del período</strong>: monto vendido de las oportunidades ganadas, separado por moneda.</li><li><strong>Tendencias</strong>: cotizaciones generadas y aceptadas por mes, y ventas ganadas por mes.</li><li><strong>Oportunidades por etapa</strong>: cuántos registros hay en cada etapa y el monto acumulado.</li><li><strong>Pendientes próximos</strong>: actividades agendadas para los próximos 14 días.</li></ul>
+<p>Detalle en el <a href="#sec-11-10-panel-de-metricas">capítulo 10</a>.</p>
+<h2 id="sec-2-1-4-cambiar-su-contrasena">1.4 Cambiar su contraseña</h2>
+<ol><li>Menú <code>[Mi perfil]</code>.</li><li>Complete <code>[Contraseña actual]</code>, <code>[Nueva contraseña]</code> y <code>[Confirmar nueva contraseña]</code>.</li><li>Pulse <code>[Guardar]</code>.</li></ol>
+<p>Requisitos de la nueva contraseña: <strong>mínimo 10 caracteres</strong>, hasta 200, y las dos entradas deben coincidir.</p>
+<p class="nota"><strong>Nota:</strong> la contraseña no se puede ver desde el sistema. Si se le olvida, use la recuperación del login; un administrador <strong>no</strong> puede ver la suya ni cambiársela a otro usuario desde la ficha.</p>
+<h2 id="sec-2-1-5-usuarios-solo-administrador">1.5 Usuarios (solo administrador)</h2>
+<p>En <code>[Usuarios]</code> se ve el listado de personas con acceso. Cada usuario tiene: nombre, apellido, correo, teléfono, <strong>rol</strong> y estado (activo/inactivo).</p>
+<h3 id="sec-2-crear-un-usuario">Crear un usuario</h3>
+<ol><li><code>[Usuarios]</code> → <code>[Nuevo usuario]</code>.</li><li>Complete <code>[Nombre]</code>, <code>[Apellido]</code>, <code>[Correo electrónico]</code> (obligatorio), <code>[Teléfono]</code> (opcional), el <code>[Rol]</code> y la <code>[Contraseña]</code> inicial.</li><li><code>[Guardar]</code>. Entre a la casilla de correo para que el sistema valide el formato.</li></ol>
+<p>Para desactivar a alguien sin borrar su historial, márquelo como inactivo en su ficha: deja de poder entrar y sus registros se conservan.</p>
+<h2 id="sec-2-1-6-roles-y-que-puede-ver-cada-uno">1.6 Roles y qué puede ver cada uno</h2>
+<p>Los roles son tres, y cada uno tiene un conjunto fijo de permisos:</p>
+<table><thead><tr><th>Capacidad</th><th>Administración</th><th>Comercial</th><th>Consulta</th></tr></thead><tbody><tr><td>Ver clientes, contactos, productos, oportunidades, actividades y cotizaciones</td><td>Sí</td><td>Sí</td><td>Sí</td></tr><tr><td>Crear y editar clientes, contactos, oportunidades y actividades</td><td>Sí</td><td>Sí</td><td>No</td></tr><tr><td>Crear y editar productos y servicios</td><td>Sí</td><td>No</td><td>No</td></tr><tr><td>Crear y editar cotizaciones</td><td>Sí</td><td>Sí</td><td>No</td></tr><tr><td>Ver reportes y exportar a CSV</td><td>Sí</td><td>Sí</td><td>Sí</td></tr><tr><td>Administrar etapas del pipeline</td><td>Sí</td><td>No</td><td>No</td></tr><tr><td>Administrar tipos de actividad</td><td>Sí</td><td>No</td><td>No</td></tr><tr><td>Administrar datos de la empresa</td><td>Sí</td><td>No</td><td>No</td></tr><tr><td>Administrar usuarios y roles</td><td>Sí</td><td>No</td><td>No</td></tr></tbody></table>
+<p>En <code>[Usuarios] → [Roles]</code> se ve la matriz completa de permisos por rol. Si una pantalla o un botón no aparece, es porque el rol no lo tiene: pida al administrador que ajuste el rol en vez de buscar una forma de saltarse el bloqueo.</p>
+<p class="nota"><strong>Nota:</strong> el rol no cambia lo que ve de los datos, solo lo que puede hacer. Por ejemplo, el rol Consulta sí ve el reporte de ventas, pero no puede crear oportunidades.</p>
+<h2 id="sec-2-1-7-configuracion-del-sistema">1.7 Configuración del sistema</h2>
+<p>Tres pantallas, todas solo para administración:</p>
+<ul><li><code>[Etapas]</code>: las etapas del pipeline, su orden, probabilidad por defecto y cuáles son la etapa ganada y la perdida.</li><li><code>[Tipos de actividad]</code>: los tipos de actividad disponibles (llamada, reunión, visita, correo…), con color e icono.</li><li><code>[Empresa]</code>: los datos que salen en las cotizaciones: nombre comercial, razón social, cédula jurídica, contacto, logotipo, moneda e impuesto por defecto, prefijo de numeración y condiciones comerciales.</li></ul>
+<p>Detalle en el <a href="#sec-10-9-documento-de-cotizacion">capítulo 9</a> para los datos de empresa.</p></section>
+<section class="capitulo"><h1 id="sec-3-2-clientes">2. Clientes</h1>
+<p>El cliente es la empresa o la persona a la que se le vende. Es el punto de partida de todo: sus contactos, oportunidades, cotizaciones y actividades cuelgan de él.</p>
+<h2 id="sec-3-2-1-ver-el-listado">2.1 Ver el listado</h2>
+<p><code>[Clientes]</code> abre el listado con el total de registros del filtro actual.</p>
+<ul><li><strong>Buscar</strong>: un solo campo de texto que busca a la vez por <strong>nombre, correo, teléfono o identificación</strong>. Escriba parte de cualquiera de los cuatro y <code>[Filtrar]</code>.</li><li><strong>Tipo de cliente</strong>: <code>Persona física</code> o <code>Empresa</code>.</li><li><strong>Estado</strong>: todos, activos o inactivos.</li></ul>
+<p class="nota"><strong>Nota:</strong> el buscador es "contiene": escribir <code>sol</code> encuentra <em>"Corporación Sol del Este"</em> y también <em>"Soluciones Totales"</em>. No distingue mayúsculas.</p>
+<h2 id="sec-3-2-2-crear-un-cliente">2.2 Crear un cliente</h2>
+<ol><li><code>[Clientes]</code> → <code>[Nuevo cliente]</code>.</li><li>Complete los campos:</li></ol>
+<table><thead><tr><th>Campo</th><th>Obligatorio</th><th>Notas</th></tr></thead><tbody><tr><td>Nombre o razón social</td><td>Sí</td><td>Nombre comercial como lo conoce el mercado</td></tr><tr><td>Tipo de cliente</td><td>Sí</td><td>Persona física o Empresa</td></tr><tr><td>Tipo de identificación</td><td>No</td><td>Cédula física, jurídica, DIMEX, NIT, pasaporte u otro</td></tr><tr><td>Número de identificación</td><td>No</td><td>Se valida el formato según el tipo elegido</td></tr><tr><td>Sitio web, teléfono, correo, dirección</td><td>No</td><td>Complete los que tenga a la mano</td></tr><tr><td>Notas</td><td>No</td><td>Información libre</td></tr></tbody></table>
+<ol><li><code>[Guardar]</code>.</li></ol>
+<p class="nota"><strong>Nota:</strong> solo el nombre es obligatorio. El tipo de identificación y su número deben ir juntos: si marca el tipo pero deja el número vacío, el sistema lo advierte. Complete los datos faltantes después desde <code>[Editar]</code>; la ficha queda creada igual.</p>
+<h2 id="sec-3-2-3-ficha-del-cliente">2.3 Ficha del cliente</h2>
+<p>Al abrir un cliente verá sus datos y, debajo, sus relaciones:</p>
+<ul><li><strong>Contactos</strong>: personas de la cuenta, con su teléfono, correo y si es el contacto principal. Desde ahí se entra a <code>[Nuevo contacto]</code> ya con el cliente asignado.</li><li><strong>Oportunidades</strong>: comerciales asociadas, con etapa, estado y monto. Permite crear una nueva con el cliente puesto.</li><li><strong>Cotizaciones</strong>: números, estado, fecha y total. Se abre el documento o la ficha de la cotización.</li><li><strong>Actividades</strong>: seguimientos registrados para ese cliente.</li></ul>
+<p>Si el cliente está inactivo, la ficha lo avisa y deja de aparecer en los desplegables donde se elige cliente para registrar una oportunidad, una cotización o una actividad.</p>
+<h2 id="sec-3-2-4-editar-y-activar-desactivar">2.4 Editar y activar/desactivar</h2>
+<ul><li><code>[Editar]</code> abre el formulario con los datos cargados.</li><li><strong>Desactivar</strong> marca el cliente como inactivo sin borrarlo: desaparece de los desplegables para registrar algo nuevo, pero se sigue viendo en los listados con el filtro "Inactivos" y mantiene todo su historial.</li><li><strong>Activar</strong> lo devuelve a la operación normal.</li></ul>
+<p class="nota"><strong>Nota:</strong> no hay borrar. Es a propósito: un cliente con historial comercial no se elimina, se desactiva. Así los reportes y las cotizaciones oldeñas siguen siendo auditables.</p>
+<h2 id="sec-3-2-5-problemas-frecuentes">2.5 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>No aparece el cliente en el desplegable de otro módulo</td><td>Está inactivo</td><td>Actívelo desde su ficha</td></tr><tr><td>El buscador no lo encuentra</td><td>El cliente está inactivo y el filtro dice "Activos"</td><td>Cambie el filtro a "Todos"</td></tr><tr><td>"El número de identificación no corresponde al tipo"</td><td>Cédula jurídica con formato de física</td><td>Corrija el par tipo/número</td></tr><tr><td>No puedo crear contactos ni oportunidades</td><td>Su rol no tiene permiso de escritura</td><td>Ver <a href="#sec-2-1-acceso-usuarios-y-roles">capítulo 1</a></td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-4-3-contactos">3. Contactos</h1>
+<p>Los contactos son las personas con las que se habla en una cuenta: el decisor, el técnico, quien paga. Un cliente puede tener varios.</p>
+<h2 id="sec-4-3-1-ver-el-listado">3.1 Ver el listado</h2>
+<p><code>[Contactos]</code> muestra todos los contactos con su cliente, puesto y datos.</p>
+<ul><li><strong>Buscar</strong>: busca por <strong>nombre, apellido, correo o cliente</strong> a la vez.</li><li><strong>Cliente</strong>: acota a una cuenta.</li><li><strong>Estado</strong>: todos, activos o inactivos.</li></ul>
+<h2 id="sec-4-3-2-crear-un-contacto">3.2 Crear un contacto</h2>
+<ol><li><code>[Contactos]</code> → <code>[Nuevo contacto]</code>, o desde la ficha de un cliente con <code>[Nuevo contacto]</code> (el cliente ya queda asignado).</li><li>Complete:</li></ol>
+<table><thead><tr><th>Campo</th><th>Obligatorio</th><th>Notas</th></tr></thead><tbody><tr><td>Cliente</td><td>Sí</td><td>Cuenta a la que pertenece</td></tr><tr><td>Nombre y apellido</td><td>Sí</td><td>Se piden por separado</td></tr><tr><td>Cargo o puesto</td><td>No</td><td>Ej.: Director de compras</td></tr><tr><td>Teléfono</td><td>No</td><td>Se puede escribir con o sin guiones</td></tr><tr><td>Correo electrónico</td><td>No</td><td>Se valida el formato</td></tr><tr><td>Notas</td><td>No</td><td>\-</td></tr><tr><td>Contacto principal</td><td>No</td><td>Solo uno por cliente; ver 3.4</td></tr></tbody></table>
+<ol><li><code>[Guardar]</code>.</li></ol>
+<p class="nota"><strong>Nota:</strong> el correo y el teléfono son opcionales, pero un contacto sin ninguno de los dos casi nunca sirve: si puede completarlos en el momento, complete.</p>
+<h2 id="sec-4-3-3-ficha-y-edicion">3.3 Ficha y edición</h2>
+<p>La ficha del contacto muestra sus datos, su cliente (con enlace), su puesto y las actividades y cotizaciones donde aparece. <code>[Editar]</code> abre el formulario.</p>
+<p>Al desactivar un contacto, deja de aparecer en los desplegables, pero se conserva en las cotizaciones donde ya se usó.</p>
+<h2 id="sec-4-3-4-contacto-principal">3.4 Contacto principal</h2>
+<p>Marcar <code>[Contacto principal]</code> marca a esa persona como el interlocutor principal de la cuenta. El efecto es de orden, no de bloqueo:</p>
+<ul><li>En la ficha del cliente, el contacto principal aparece de primero en la lista de contactos.</li><li>En el listado de contactos se distingue con una etiqueta.</li><li>Solo un contacto por cliente puede ser principal: si marca otro, el anterior deja de serlo automáticamente.</li><li>No es obligatorio. Si nadie lo marca, el sistema los ordena por apellido.</li></ul>
+<p class="nota"><strong>Nota:</strong> al crear una cotización el contacto se elige a mano en el formulario. Marcar el principal no lo selecciona por usted: es una ayuda para saber a quién llamar primero, no un automatismo.</p>
+<h2 id="sec-4-3-5-problemas-frecuentes">3.5 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>Marqué otro principal y este dejó de serlo</td><td>Solo hay un principal por cliente</td><td>Es el comportamiento correcto: marque el que corresponde</td></tr><tr><td>El contacto no aparece al crear una cotización</td><td>Está inactivo</td><td>Actívelo desde su ficha</td></tr><tr><td>Cambié el teléfono y la cotización anterior no cambió</td><td>Las cotizaciones guardan una copia</td><td>Edite la cotización si necesita actualizar el documento</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-5-4-productos-y-servicios">4. Productos y servicios</h1>
+<p>El catálogo reúne lo que se vende. Un registro puede ser un producto físico o un servicio; la diferencia está en la <strong>unidad de medida</strong> y en el tipo.</p>
+<h2 id="sec-5-4-1-ver-el-listado">4.1 Ver el listado</h2>
+<p><code>[Productos]</code> muestra el catálogo con su código, tipo, precio, impuesto y estado.</p>
+<ul><li><strong>Buscar</strong>: busca por <strong>código, nombre o descripción</strong> a la vez.</li><li><strong>Tipo</strong>: producto o servicio.</li><li><strong>Categoría</strong>: agrupa el catálogo (por ejemplo <em>Licencias</em>, <em>Consultoría</em>).</li><li><strong>Estado</strong>: todos, vigentes o inactivos.</li></ul>
+<h2 id="sec-5-4-2-crear-un-producto-o-servicio">4.2 Crear un producto o servicio</h2>
+<ol><li><code>[Productos]</code> → <code>[Nuevo producto]</code>.</li><li>Complete:</li></ol>
+<table><thead><tr><th>Campo</th><th>Obligatorio</th><th>Notas</th></tr></thead><tbody><tr><td>Código</td><td>Sí</td><td>Identificador corto y único, por ejemplo <code>LIC-001</code>. Se guarda en mayúsculas</td></tr><tr><td>Nombre</td><td>Sí</td><td>Cómo lo llama el mercado</td></tr><tr><td>Tipo</td><td>Sí</td><td>Producto o Servicio</td></tr><tr><td>Categoría</td><td>No</td><td>Elija una o escriba <code>[Nombre de la nueva categoría]</code> para crearla</td></tr><tr><td>Precio de venta</td><td>Sí</td><td>En la moneda que elija</td></tr><tr><td>Moneda</td><td>Sí</td><td>CRC o USD</td></tr><tr><td>Impuesto (%)</td><td>Sí</td><td>Porcentaje, por ejemplo <code>13</code> para el 13 %</td></tr><tr><td>Unidad de medida</td><td>Sí</td><td><code>Unidad</code>, <code>Hora</code>, <code>Mes</code>, <code>Licencia</code>, <code>Kg</code>…</td></tr><tr><td>Descripción</td><td>No</td><td>Qué incluye, para qué sirve</td></tr></tbody></table>
+<ol><li><code>[Guardar]</code>.</li></ol>
+<p class="nota"><strong>Nota:</strong> el código es único y no distingue mayúsculas: <code>abc-1</code> y <code>ABC-1</code> son el mismo producto. Si el sistema responde que el código ya existe, edite el producto que ya lo tiene en lugar de crear otro.</p>
+<h2 id="sec-5-4-3-categorias">4.3 Categorías</h2>
+<ul><li>Las categorías se administran desde el propio formulario del producto: escriba el nombre de una nueva y se crea sola, reutilizándola si ya existe.</li><li>Si escribe el nombre de una categoría existente, el sistema la usa en vez de duplicarla.</li></ul>
+<p class="nota"><strong>Nota:</strong> los productos sin categoría siguen siendo válidos; puede usarlos en cotizaciones. La categoría solo sirve para ordenar y filtrar el catálogo.</p>
+<h2 id="sec-5-4-4-editar-vigencia-y-precios">4.4 Editar, vigencia y precios</h2>
+<ul><li><code>[Editar]</code> cambia cualquier dato del producto.</li><li><strong>Desactivar</strong> marca el registro como no vigente: deja de ofrecerse al crear cotizaciones, pero sigue visible en el catálogo con el filtro "Inactivos" y en las cotizaciones donde ya se usó.</li><li>El precio y el impuesto del producto <strong>sugerirán</strong> los valores al agregar la línea a una cotización, pero lo que manda es el valor de la línea: puede cambiarlo ahí sin tocar el catálogo.</li></ul>
+<p class="nota"><strong>Nota:</strong> cambiar el precio en el catálogo no altera cotizaciones ya creadas. Cada línea guarda su propio precio, de modo que un documento ya enviado sigue mostrando lo que el cliente aceptó.</p>
+<h2 id="sec-5-4-5-problemas-frecuentes">4.5 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>"El código ya existe"</td><td>Hay otro producto con ese código</td><td>Busque por código y edite ese producto</td></tr><tr><td>No aparece el producto en la cotización</td><td>Está inactivo</td><td>Actívelo desde su ficha</td></tr><tr><td>El total no coincide con lo esperado</td><td>El precio del producto es solo referencia</td><td>Ajuste el precio de la línea en la cotización</td></tr><tr><td>No sé si es producto o servicio</td><td>Depende de cómo se entrega</td><td>Servicio si se cobra por hora, mes o proyecto</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-6-5-oportunidades">5. Oportunidades</h1>
+<p>Una oportunidad es un negocio en marcha: tiene monto, moneda, etapa y una probabilidad. De ella cuelgan las actividades de seguimiento y las cotizaciones.</p>
+<h2 id="sec-6-5-1-ver-el-listado">5.1 Ver el listado</h2>
+<p><code>[Oportunidades]</code> lista los negocios con su cliente, etapa, estado, monto y responsable.</p>
+<ul><li><strong>Buscar</strong>: busca por <strong>nombre, cliente o responsable</strong>.</li><li><strong>Estado</strong>: abiertas, ganadas, perdidas o todas.</li><li><strong>Etapa</strong>: la columna actual del proceso de venta.</li><li><strong>Cliente</strong>: una cuenta en concreto.</li><li><strong>Responsable</strong>: el comercial asignado.</li></ul>
+<p class="nota"><strong>Nota:</strong> cada monto aparece con su símbolo (₡ o US$). Si la lista mezcla monedas, no hay un total general: los subtotales por moneda se calculan en el <a href="#sec-11-10-panel-de-metricas">Panel</a> y en los <a href="#sec-12-11-reportes">Reportes</a>.</p>
+<h2 id="sec-6-5-2-crear-una-oportunidad">5.2 Crear una oportunidad</h2>
+<ol><li><code>[Oportunidades]</code> → <code>[Nueva oportunidad]</code>, o desde la ficha de un cliente con <code>[Nueva oportunidad]</code> (el cliente y su contacto principal ya quedan puestos).</li><li>Complete:</li></ol>
+<table><thead><tr><th>Campo</th><th>Obligatorio</th><th>Notas</th></tr></thead><tbody><tr><td>Cliente</td><td>Sí</td><td>Debe estar activo</td></tr><tr><td>Contacto</td><td>No</td><td>Se limita a los contactos de ese cliente</td></tr><tr><td>Nombre de la oportunidad</td><td>Sí</td><td>Ej.: "Renovación de licencias 2026"</td></tr><tr><td>Etapa</td><td>Sí</td><td>La columna del proceso donde empieza</td></tr><tr><td>Monto estimado</td><td>Sí</td><td>En la moneda elegida</td></tr><tr><td>Moneda</td><td>Sí</td><td>CRC o USD</td></tr><tr><td>Probabilidad (%)</td><td>Sí</td><td>De 0 a 100</td></tr><tr><td>Cierre estimado</td><td>No</td><td>Fecha tentativa de cierre</td></tr><tr><td>Responsable</td><td>Sí</td><td>El comercial que lleva el negocio</td></tr><tr><td>Descripción / Notas</td><td>No</td><td>Qué necesita el cliente, competencia, condiciones</td></tr></tbody></table>
+<ol><li><code>[Guardar]</code>.</li></ol>
+<p class="nota"><strong>Nota:</strong> cambiar de etapa no cambia el estado. Una oportunidad sigue <strong>abierta</strong> aunque avance de columna; solo se cierra cuando se gana o se pierde.</p>
+<h2 id="sec-6-5-3-ficha-de-la-oportunidad">5.3 Ficha de la oportunidad</h2>
+<p>La ficha muestra, en tres bloques:</p>
+<ul><li><strong>Información</strong>: todos los datos, editables con <code>[Editar]</code>.</li><li><strong>Actividades</strong>: los seguimientos registrados, con su fecha y estado. Desde <code>[Registrar actividad]</code> se abre el formulario con la oportunidad ya asignada.</li><li><strong>Cotizaciones</strong>: los documentos emitidos para este negocio, con su número y estado. Desde <code>[Nueva cotización]</code> se crea uno con cliente y contacto puestos.</li></ul>
+<h2 id="sec-6-5-4-cambiar-de-etapa">5.4 Cambiar de etapa</h2>
+<p>Puede mover la oportunidad de columna desde:</p>
+<ul><li>la ficha, con <code>[Editar]</code>; o</li><li>el <a href="#sec-7-6-pipeline-de-ventas">Pipeline</a>, con el selector <code>[Mover]</code> de cada tarjeta.</li></ul>
+<p>Las etapas se administran en <code>[Configuración]</code> → <code>[Etapas]</code>, dentro del <a href="#sec-2-1-acceso-usuarios-y-roles">capítulo 1</a>. Solo el administrador puede crearlas, renombrarlas o reordenarlas.</p>
+<h2 id="sec-6-5-5-cerrar-y-reabrir">5.5 Cerrar y reabrir</h2>
+<ul><li><code>[Cerrar]</code> pide el resultado: <strong>ganada</strong> o <strong>perdida</strong>, y una casilla de confirmación. El motivo es obligatorio si se perdió. Al cerrar, la probabilidad se ajusta sola: 100 % si se ganó, 0 % si se perdió, para que el pipeline no sume dinero que no va a entrar.</li><li><code>[Reabrir]</code> devuelve la oportunidad al proceso: pide confirmación y la vuelve a abierta, manteniendo su etapa, su monto y su probabilidad, y borrando la fecha de cierre y el motivo de pérdida.</li></ul>
+<p class="nota"><strong>Nota:</strong> una oportunidad ganada sigue contando en el pipeline y en las métricas del periodo en que se cerró, no en el de hoy. Por eso los números del panel cambian según el filtro de fechas.</p>
+<h2 id="sec-6-5-6-problemas-frecuentes">5.6 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>No aparece el cliente en el desplegable</td><td>Está inactivo</td><td>Actívelo</td></tr><tr><td>La oportunidad no cambia de columna al guardar</td><td>Editó otro campo</td><td>Use el selector de etapa del pipeline o <code>[Editar]</code></td></tr><tr><td>El sistema dice "La oportunidad ya está cerrada"</td><td>Intenta cerrarla otra vez</td><td>Verifique en la ficha si aparece <code>[Reabrir]</code></td></tr><tr><td>Al cerrar como perdida pide motivo</td><td>Es obligatorio para aprender del cierre</td><td>Escriba el motivo, aunque sea corto</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-7-6-pipeline-de-ventas">6. Pipeline de ventas</h1>
+<p>El pipeline muestra las oportunidades abiertas agrupadas por etapa, como un tablero. Sirve para ver de un vistazo dónde está el embudo y qué pesa cada columna.</p>
+<h2 id="sec-7-6-1-ver-el-tablero">6.1 Ver el tablero</h2>
+<p><code>[Pipeline]</code> abre el tablero con una columna por etapa, en el orden definido en <code>[Configuración]</code> → <code>[Etapas]</code>.</p>
+<p>Cada tarjeta muestra:</p>
+<ul><li>Nombre de la oportunidad y cliente.</li><li>Monto con su moneda y <strong>probabilidad</strong>.</li><li>Cierre estimado, si tiene fecha.</li><li>Nombre del responsable (RF-065).</li></ul>
+<p>Cada columna muestra su <strong>total acumulado</strong>, calculado sobre <strong>todas</strong> las oportunidades de esa etapa, no solo las tarjetas visibles. Si una columna supera las 30 tarjetas, se muestran las primeras 30 (ordenadas por estado, luego fecha de cierre) y el resto se cuenta en el enlace al listado filtrado por esa etapa.</p>
+<p>Arriba del tablero hay tres tarjetas de resumen:</p>
+<ul><li><strong>Abierto · CRC</strong> y <strong>Abierto · USD</strong>: el total y la cantidad de oportunidades <strong>en curso</strong> de todo el histórico, por moneda.</li><li><strong>Resultado</strong>: cuántas oportunidades se ganaron y cuántas se perdieron, del histórico completo, más los enlaces <code>[Ver listado]</code> y <code>[Administrar etapas]</code> (este último solo para administradores).</li></ul>
+<p>Las etapas ganada y perdida se distinguen con una etiqueta en la columna, y si alguna oportunidad quedó en una <strong>etapa desactivada</strong>, aparece arriba un aviso con el enlace <code>[Verlas en el listado]</code>: no se pierden de la vista.</p>
+<p>Si una etapa no tiene ninguna oportunidad, su monto acumulado muestra <strong>Sin monto acumulado</strong> en lugar de ₡0 o US$0: cero es un dato, "sin monto acumulado" es la ausencia de dato.</p>
+<p class="nota"><strong>Nota:</strong> los totales del pipeline son <strong>por columna y por moneda</strong>. Cuando una etapa tiene negocios en colones y en dólares, el sistema muestra los dos subtotales por separado y nunca los suma.</p>
+<h2 id="sec-7-6-2-mover-una-oportunidad-de-etapa">6.2 Mover una oportunidad de etapa</h2>
+<ol><li>En la tarjeta, elija la etapa destino en el selector.</li><li>Pulse <code>[Mover]</code>.</li></ol>
+<p>El cambio es inmediato y no pide confirmación: mover es una operación frecuente del día a día. Cada tarjeta trae su propio selector, así que puede mover varias oportunidades seguidas.</p>
+<ul><li>Solo quien tiene permiso de escritura en oportunidades ve los selectores; con un rol de solo lectura el tablero se puede ver pero no mover.</li><li>No se puede mover una oportunidad que ya está ganada o perdida: primero reabrirla desde su ficha.</li></ul>
+<p class="nota"><strong>Nota:</strong> mover una oportunidad <strong>no</strong> cambia su estado ni su probabilidad. Si la negociación se estancó, lo correcto es dejar la etapa y hablar con el cliente: el pipeline refleja la realidad del negocio, no una aspiración.</p>
+<h2 id="sec-7-6-3-cuando-usar-el-pipeline-y-cuando-el-listado">6.3 Cuándo usar el pipeline y cuándo el listado</h2>
+<table><thead><tr><th>Necesito…</th><th>Use</th></tr></thead><tbody><tr><td>Ver el embudo completo y sus totales por etapa</td><td>Pipeline</td></tr><tr><td>Buscar una oportunidad puntual por nombre, cliente o responsable</td><td>Listado de oportunidades</td></tr><tr><td>Filtrar por estado, etapa o responsable</td><td>Listado de oportunidades</td></tr><tr><td>Revisar qué sigue en negotiation</td><td>Pipeline, luego su ficha</td></tr></tbody></table>
+<p class="nota"><strong>Nota:</strong> el pipeline no tiene buscador ni filtros: es una vista de tablero. Para investigar, use el <a href="#sec-6-5-oportunidades">listado de oportunidades</a>, que además registra la búsqueda en la URL para poder compartirla o volver a ella con los botones del navegador.</p>
+<h2 id="sec-7-6-4-problemas-frecuentes">6.4 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>"Sin monto acumulado" en una columna</td><td>Esa etapa no tiene oportunidades</td><td>Es correcto: nada que acumular todavía</td></tr><tr><td>Aviso de etapas desactivadas</td><td>Hay oportunidades en una etapa que se desactivó</td><td>Muévalas desde el listado o reactive la etapa</td></tr><tr><td>Veo 30 tarjetas y el total es mayor</td><td>La columna pasó el límite de tarjetas</td><td>Use el enlace al listado de esa etapa</td></tr><tr><td>No veo los selectores de etapa</td><td>Su rol es de solo lectura</td><td>Pida a un administrador o comercial que lo mueva</td></tr><tr><td>La oportunidad movida sigue igual en el listado</td><td>La pantalla está cacheada</td><td>Recargue la página</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-8-7-actividades">7. Actividades</h1>
+<p>Las actividades son los seguimientos con fecha: llamadas, reuniones, visitas, correos. Es lo que impide que un negocio se enfríe porque nadie lo tocó.</p>
+<h2 id="sec-8-7-1-ver-el-listado">7.1 Ver el listado</h2>
+<p><code>[Actividades]</code> muestra título, tipo, cliente, oportunidad, fecha, responsable y estado.</p>
+<ul><li><strong>Buscar</strong>: busca por <strong>título, cliente u oportunidad</strong>.</li><li><strong>Tipo</strong>: llamada, reunión, visita, correo u otro (según lo configurado).</li><li><strong>Estado</strong>: pendientes, completadas, canceladas o todas.</li><li><strong>Responsable</strong>: la persona a cargo del seguimiento.</li><li><strong>Cliente</strong>: una cuenta en concreto.</li></ul>
+<p>El listado ordena por fecha programada, de la más próxima a la más lejana.</p>
+<p class="nota"><strong>Nota:</strong> una actividad con fecha ya pasada y estado pendiente aparece marcada como <strong>Vencida</strong>. No se marca sola como completada: si la reunión sí ocurrió, cámbiela a completada.</p>
+<h2 id="sec-8-7-2-registrar-una-actividad">7.2 Registrar una actividad</h2>
+<p>Puede crearla de tres formas:</p>
+<ul><li><code>[Actividades]</code> → <code>[Nueva actividad]</code>;</li><li>desde la ficha de un cliente;</li><li>desde la ficha de una oportunidad, con <code>[Registrar actividad]</code>, que deja la oportunidad ya asignada.</li></ul>
+<p>Complete:</p>
+<table><thead><tr><th>Campo</th><th>Obligatorio</th><th>Notas</th></tr></thead><tbody><tr><td>Título</td><td>Sí</td><td>Ej.: "Llamada de seguimiento de propuesta"</td></tr><tr><td>Tipo</td><td>Sí</td><td>De los configurados en <code>[Configuración]</code> → <code>[Tipos de actividad]</code></td></tr><tr><td>Cliente</td><td>Sí</td><td>La cuenta relacionada</td></tr><tr><td>Contacto</td><td>No</td><td>Persona concreta de esa cuenta</td></tr><tr><td>Oportunidad</td><td>No</td><td>Si el seguimiento es de un negocio en particular</td></tr><tr><td>Fecha y hora programada</td><td>Sí</td><td>Cuándo hay que hacerla</td></tr><tr><td>Duración (min)</td><td>No</td><td>Para planning: 30, 60, 90</td></tr><tr><td>Responsable</td><td>Sí</td><td>Quién la atiende</td></tr><tr><td>Prioridad</td><td>Sí</td><td>Baja, media o alta</td></tr><tr><td>Estado</td><td>Sí</td><td>Pendiente, completada o cancelada</td></tr><tr><td>Descripción</td><td>Sí</td><td>De qué se trata y qué hay que llevar</td></tr></tbody></table>
+<p class="nota"><strong>Nota:</strong> la fecha y hora son locales de la oficina. El sistema no convierte a otra zona horaria: si su equipo trabaja en otra hora, escríbalo en la descripción o regístrelo en el momento correcto.</p>
+<h2 id="sec-8-7-3-estados-y-su-resultado">7.3 Estados y su resultado</h2>
+<p>La ficha de la actividad tiene un panel de estado, del lado derecho:</p>
+<ul><li><strong>Pendiente</strong>: es lo normal al crearla.</li><li><strong>Marcar como completada</strong>: debajo aparece un campo <strong><code>Resultado (opcional)</code></strong> para anotar cómo terminó (ej.: <em>"Quedó agendada con compras para el jueves"</em>).</li><li><strong>Cancelar actividad</strong>: el campo pasa a <strong><code>Motivo de la cancelación (opcional)</code></strong>.</li><li><strong>Reabrir como pendiente</strong>: aparece cuando la actividad ya estaba cerrada.</li></ul>
+<p>Al completar o cancelar, el sistema guarda la fecha de cierre. Al reabrir, borra esa fecha y limpia el resultado anterior: el historial refleja el último estado real, sin datos que contradigan lo que pasó.</p>
+<p>Marcar una actividad como completada o cancelada no la borra ni libera el cliente: el histórico de seguimientos se mantiene.</p>
+<h2 id="sec-8-7-4-editar">7.4 Editar</h2>
+<p><code>[Editar]</code> abre el formulario con los datos cargados, incluido el estado y su resultado. Desde ahí también se puede cambiar el estado; es la misma lógica del panel de la ficha.</p>
+<p class="nota"><strong>Nota:</strong> el sistema no le impide programar una actividad en el pasado. Sirve para registrar lo que ya se hizo (una llamada de ayer) sin tener que inventar una fecha futura. La que queda en el pasado y pendiente es la que se marca como <strong>Vencida</strong>, y ahí sí conviene actuar: completarla, cancelarla o reprogramarla.</p>
+<h2 id="sec-8-7-5-problemas-frecuentes">7.5 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>Aparece como vencida</td><td>Fecha pasada y estado pendiente</td><td>Márchela completada si ocurrió, o reprográmela</td></tr><tr><td>Registré una actividad de ayer</td><td>Se puede, a propósito</td><td>Márchela completada con su resultado</td></tr><tr><td>No aparece el tipo que necesito</td><td>Los tipos se configuran en el sistema</td><td>Un administrador debe crearlo en <code>[Configuración]</code></td></tr><tr><td>La oportunidad no aparece en el desplegable</td><td>La oportunidad es de otro cliente</td><td>Elegí primero el cliente correcto</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-9-8-cotizaciones">8. Cotizaciones</h1>
+<p>Una cotización es la propuesta comercial que se le entrega al cliente: número, líneas, impuestos, descuento y total. Nace siempre en <strong>borrador</strong> y va cambiando de estado conforme avanza.</p>
+<h2 id="sec-9-8-1-ver-el-listado">8.1 Ver el listado</h2>
+<p><code>[Cotizaciones]</code> lista los documentos con número, cliente, estado, fecha y total.</p>
+<ul><li><strong>Buscar</strong>: busca por <strong>número o cliente</strong>.</li><li><strong>Estado</strong>: borrador, enviada, aceptada, rechazada, vencida o todas.</li><li><strong>Cliente</strong>: una cuenta en concreto.</li><li><strong>Creador</strong>: el comercial que la preparó.</li></ul>
+<p class="nota"><strong>Nota:</strong> el número se genera solo, con el patrón <code>COT-AÑO-0001</code>, usando el prefijo configurado en <code>[Configuración]</code> → <code>[Empresa]</code>. El correlativo se reinicia cada año: al llegar enero empieza en 0001 aunque el último de diciembre fuera 0057.</p>
+<h2 id="sec-9-8-2-crear-una-cotizacion">8.2 Crear una cotización</h2>
+<ol><li><code>[Cotizaciones]</code> → <code>[Nueva cotización]</code>, o desde la ficha de un cliente o de una oportunidad, que dejan cliente, contacto y oportunidad ya asignados.</li><li>Complete la cabecera:</li></ol>
+<table><thead><tr><th>Campo</th><th>Obligatorio</th><th>Notas</th></tr></thead><tbody><tr><td>Cliente</td><td>Sí</td><td>Debe estar activo</td></tr><tr><td>Contacto</td><td>No</td><td>Solo contactos de ese cliente</td></tr><tr><td>Oportunidad</td><td>No</td><td>Solo oportunidades de ese cliente</td></tr><tr><td>Moneda</td><td>Sí</td><td><strong>Fija la moneda de todas las líneas.</strong> Cambiarla después no recalcula lo ya capturado</td></tr><tr><td>Válida hasta</td><td>No</td><td>Fecha de vencimiento de la propuesta</td></tr><tr><td>Condiciones comerciales</td><td>No</td><td>Texto que va al pie del documento. Viene precargado con las condiciones por defecto de <code>[Configuración]</code> → <code>[Empresa]</code></td></tr><tr><td>Notas internas</td><td>No</td><td><strong>No aparece en el documento</strong>; es para el equipo</td></tr><tr><td>Descuento de la cotización</td><td>No</td><td>En monto o en porcentaje</td></tr></tbody></table>
+<ol><li>Agregue las líneas. Por cada línea:</li></ol>
+<table><thead><tr><th>Campo</th><th>Notas</th></tr></thead><tbody><tr><td>Producto o servicio</td><td>Elegir del catálogo trae precio, impuesto y unidad</td></tr><tr><td>Línea libre</td><td>Para algo que no está en el catálogo: escribí la descripción</td></tr><tr><td>Cantidad, precio, impuesto, descuento</td><td>Se calculan el subtotal y el total en pantalla</td></tr></tbody></table>
+<ol><li><code>[Guardar]</code>. La cotización se crea <strong>en borrador</strong> y ya tiene número.</li></ol>
+<p class="nota"><strong>Nota:</strong> los totales se calculan <strong>desde las líneas</strong>, nunca al revés. Si edita la moneda de la cabecera después de capturar líneas, no se ajusta el precio de ellas: defina la moneda desde el principio.</p>
+<h2 id="sec-9-8-3-estados-y-transiciones">8.3 Estados y transiciones</h2>
+<table><thead><tr><th>Desde</th><th>Puede pasar a</th></tr></thead><tbody><tr><td>Borrador</td><td>Enviada, vencida</td></tr><tr><td>Enviada</td><td>Aceptada, rechazada, vencida, borrador</td></tr><tr><td>Aceptada</td><td>Borrador, vencida</td></tr><tr><td>Rechazada</td><td>Borrador, enviada</td></tr><tr><td>Vencida</td><td>Borrador, enviada</td></tr></tbody></table>
+<p>En la ficha, el panel <code>[Acciones]</code> ofrece los botones de cada transición posible. Devolver una cotización a borrador es el botón para corregirla después de enviarla.</p>
+<p class="nota"><strong>Nota:</strong> vencida no significa que el sistema haya hecho algo: si la fecha de validez pasó, la ficha muestra <strong>Pasó la fecha de validez</strong> junto al estado, pero el estado solo cambia cuando alguien lo cambia. Revise las cotizaciones vencidas con filtro de estado para no perder negocios.</p>
+<h2 id="sec-9-8-4-otras-acciones-de-la-ficha">8.4 Otras acciones de la ficha</h2>
+<ul><li><strong><code>[Ver documento]</code></strong>: abre la versión imprimible (ver <a href="#sec-10-9-documento-de-cotizacion">capítulo 9</a>).</li><li><strong><code>[Editar]</code></strong>: solo disponible en borrador. Una vez enviada, para cambiar algo hay que devolverla a borrador.</li><li><strong><code>[Duplicar como borrador]</code></strong>: crea una copia nueva en borrador con las mismas líneas. Es la forma rápida de Cotizar un segundo año o una ampliación sin volver a capturar todo. La copia tiene número propio.</li><li><strong><code>[Eliminar borrador]</code></strong>: solo en borrador, y con confirmación. No hay forma de borrar una cotización enviada: quedaría el hueco en la numeración y en el historial del cliente.</li></ul>
+<p class="nota"><strong>Nota:</strong> la ficha guarda las fechas de los estados: cuándo se creó, se envió, se aceptó o se rechazó. Duplicar o reabrir no borra el documento anterior, y los reportes siguen viendo el que se emitió.</p>
+<h2 id="sec-9-8-5-problemas-frecuentes">8.5 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>No puedo editar la cotización</td><td>Ya no está en borrador</td><td><code>[Acciones]</code> → volver a borrador</td></tr><tr><td>El total no coincide con lo que espera el cliente</td><td>Descuento de cabecera o de línea, o impuesto distinto</td><td>Revise los tres puntos antes de enviar</td></tr><tr><td>"Pasó la fecha de validez" pero el estado sigue siendo enviado</td><td>El estado no cambia solo</td><td>Márchela vencida o devuélvala a borrador y reenvíe</td></tr><tr><td>Necesito el mismo documento con otro precio</td><td>Editar no es posible fuera de borrador</td><td>Duplíquela como borrador y ajuste el precio</td></tr><tr><td>El número no es el que esperaba</td><td>El correlativo es automático y único por año</td><td>No se edita; duplique si necesita otra versión</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-10-9-documento-de-cotizacion">9. Documento de cotización</h1>
+<p>El documento es la versión imprimible de la cotización: la hoja que ve el cliente. No tiene menús ni botones de edición, solo la información para imprimir o guardar como PDF.</p>
+<h2 id="sec-10-9-1-abrir-el-documento">9.1 Abrir el documento</h2>
+<p>Desde la ficha de la cotización, pulse <strong><code>[Ver documento]</code></strong>. Se abre en una dirección propia (<code>/cotizaciones/&lt;número&gt;/documento</code>) que también puede guardarse en marcadores para enviar por correo.</p>
+<p class="nota"><strong>Nota:</strong> el documento exige sesión iniciada y permiso de lectura de cotizaciones. Si alguien abre el enlace sin haber entrado, el sistema lo lleva al login.</p>
+<h2 id="sec-10-9-2-que-muestra">9.2 Qué muestra</h2>
+<ol><li><strong>Encabezado de la empresa</strong>: nombre, identificación, teléfono, correo y dirección, tomados de <code>[Configuración]</code> → <code>[Empresa]</code>. Si esos datos están vacíos, salen en blanco: complete la configuración antes de enviar documentos a clientes.</li><li><strong>Datos de la cotización</strong>: número, fecha de emisión, fecha de validez, estado y los datos del cliente y su contacto.</li><li><strong>Tabla de líneas</strong>: producto o concepto, descripción, cantidad, unidad, precio, descuento e impuestos de cada línea, con su subtotal.</li><li><strong>Totales</strong>: subtotal, descuento de la cotización, impuestos y total, con el símbolo de la moneda.</li><li><strong>Condiciones comerciales</strong>: el texto que escribió en el formulario.</li><li><strong>Notas internas</strong>: <strong>no aparecen</strong>. Son para el equipo.</li></ol>
+<h2 id="sec-10-9-3-imprimir-o-guardar-como-pdf">9.3 Imprimir o guardar como PDF</h2>
+<ul><li><strong><code>[Imprimir]</code></strong> y <strong><code>[Guardar como PDF]</code></strong> abren el diálogo del navegador. No hay una generación de PDF propia: el sistema usa la impresión del navegador a propósito, para que usted elija impresora o archivo y para que el documento salga exactamente con los datos guardados en la cotización.</li></ul>
+<p>Ajustes recomendados:</p>
+<ul><li><strong>Destino</strong>: <em>Guardar como PDF</em> si va por correo; una impresora real si el cliente la quiere en papel.</li><li><strong>Gráficos</strong>: marque <em>Gráficos de fondo</em> si el PDF sale sin las sombras de las tablas.</li><li><strong>Márgenes</strong>: los valores por defecto ya dejan el documento en una hoja.</li></ul>
+<p class="nota"><strong>Nota:</strong> el documento refleja el estado actual de la cotización. Si la editó o cambió su estado, vuelva a abrirlo o recargue para imprimir la versión nueva.</p>
+<h2 id="sec-10-9-4-problemas-frecuentes">9.4 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>El PDF sale sin colores ni sombras</td><td>El navegador no imprimió gráficos de fondo</td><td>Active <em>Gráficos de fondo</em> al imprimir</td></tr><tr><td>El documento no tiene datos de la empresa</td><td>La configuración de empresa está vacía</td><td>Complete <code>[Configuración]</code> → <code>[Empresa]</code></td></tr><tr><td>El total del PDF no coincide con lo que ve el cliente</td><td>Se editó la cotización después de imprimir</td><td>Recargue y vuelva a imprimir</td></tr><tr><td>El enlace me pide iniciar sesión</td><td>La sesión venció o el enlace se abrió en otro equipo</td><td>Entre con su usuario y vuelva a abrirlo</td></tr><tr><td>Quiero corregir algo impreso</td><td>El documento refleja lo guardado</td><td>Devuelva la cotización a borrador, edite y vuelva a imprimir</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-11-10-panel-de-metricas">10. Panel de métricas</h1>
+<p>El panel resume el negocio en tres bloques: el estado de <strong>hoy</strong>, lo que <strong>vendió</strong> en el período elegido y las <strong>tendencias</strong> de los últimos meses.</p>
+<h2 id="sec-11-10-1-elegir-el-periodo">10.1 Elegir el periodo</h2>
+<p>Arriba del panel hay un filtro con fechas <code>Desde</code> y <code>Hasta</code>, <code>[Aplicar]</code> y el enlace <code>[Todo el historial]</code>. Los valores llegan precargados desde la barra de direcciones, así que puede marcar la URL y volver a esa vista cuando quiera.</p>
+<ul><li>Si elige <code>Desde</code> sin <code>Hasta</code>, el rango llega hasta el final del día de hoy.</li><li>Si elige <code>Hasta</code>, el sistema incluye <strong>todo ese día</strong>: la fecha se compara contra el final de la jornada, no contra las 00:00.</li><li><code>[Todo el historial]</code> limpia el filtro y vuelve a mostrar todo el histórico.</li></ul>
+<p>Debajo del filtro se lee el período como texto: <em>"Este mes · 31 días"</em>, o <em>"Del 2026-10-01 al 2026-10-04 · 4 días"</em> para un rango propio. Ese texto es la referencia de lo que el sistema entendió: si no coincide con lo que escribió, el filtro se ignoró y se está viendo otra cosa.</p>
+<p class="nota"><strong>Nota:</strong> las fechas son locales. El sistema nunca convierte a otra zona horaria: una venta del martes a las 11 p. m. cuenta en el martes que usted está viendo.</p>
+<h2 id="sec-11-10-2-ahora-mismo">10.2 Ahora mismo</h2>
+<p>Son seis cuadros con el estado actual. <strong>No cambian con el filtro de fechas</strong>: dicen cuántos hay, no cuántos hubo.</p>
+<table><thead><tr><th>Cuadro</th><th>Qué cuenta</th></tr></thead><tbody><tr><td>Clientes registrados</td><td>Todos los clientes, activos e inactivos</td></tr><tr><td>Oportunidades abiertas</td><td>Negocios en curso, con su monto en cada moneda</td></tr><tr><td>Oportunidades ganadas</td><td>Históricamente ganadas</td></tr><tr><td>Cotizaciones generadas</td><td>Cotizaciones creadas en total</td></tr><tr><td>Cotizaciones aceptadas</td><td>Cotizaciones en estado aceptada</td></tr><tr><td>Actividades pendientes</td><td>Pendientes y no vencidas, con fecha próxima</td></tr></tbody></table>
+<p class="nota"><strong>Nota:</strong> "clientes registrados" incluye los inactivos a propósito: el total histórico de clientes no baja porque alguien desactivó uno.</p>
+<h2 id="sec-11-10-3-ventas-del-periodo">10.3 Ventas del período</h2>
+<p>Esta sección <strong>sí</strong> depende del rango:</p>
+<ul><li><strong>Monto vendido</strong>: la suma de las oportunidades <strong>ganadas y cerradas</strong> dentro del rango, con subtotales separados por moneda. Si en el período no hubo cierres, avisa <em>"No hay oportunidades ganadas cerradas en este período"</em> en lugar de mostrar ₡0 o US$0: cero es un dato, la ausencia de cierres es otro.</li><li>Debajo, el texto con cuántas oportunidades se ganaron y cerrado en el período, cuántas se perdieron en total, y cuántas cotizaciones se generaron.</li><li>En cada moneda se indica el total y cuántas cotizaciones aceptadas lo componen.</li></ul>
+<p class="nota"><strong>Nota:</strong> el monto vendido cuenta <strong>oportunidades ganadas</strong>, no cotizaciones aceptadas. Son dos cosas distintas: puede ganar una oportunidad grande y no llegar a cotizar, o aceptar una cotización pequeña dentro de una oportunidad que sigue abierta. Para el detalle por cotización, use los <a href="#sec-12-11-reportes">Reportes</a>.</p>
+<h2 id="sec-11-10-4-tendencias">10.4 Tendencias</h2>
+<p>Dos gráficas de barras con ventana fija, independiente del filtro de fechas:</p>
+<ul><li><strong>Cotizaciones generadas y aceptadas</strong>: últimos <strong>6 meses</strong>, agrupadas por mes de creación. Compara volumen generado contra lo que terminó aceptándose.</li><li><strong>Ventas ganadas por mes</strong>: últimos <strong>12 meses</strong>, con el monto de las oportunidades ganadas mes a mes.</li></ul>
+<p class="nota"><strong>Nota:</strong> estas gráficas usan ventanas fijas y no el rango del filtro. Es a propósito: una tendencia de un día no dice nada.</p>
+<h2 id="sec-11-10-5-oportunidades-por-etapa">10.5 Oportunidades por etapa</h2>
+<ul><li><strong>Distribución actual</strong>: cuántas oportunidades hay en cada etapa del proceso.</li><li><strong>Monto acumulado por etapa</strong>: la suma de los montos de cada etapa, con su moneda. Si una etapa tiene negocios en colones y en dólares, aparecen los dos subtotales uno al lado del otro.</li></ul>
+<p>El enlace <code>[Ver el tablero completo →]</code> lleva al <a href="#sec-7-6-pipeline-de-ventas">pipeline</a>, donde puede mover tarjetas.</p>
+<p class="nota"><strong>Nota:</strong> las etapas ganada y perdida se distinguen en la barra, porque sus montos cuentan para el resultado y no para el trabajo por hacer.</p>
+<h2 id="sec-11-10-6-pendientes-en-los-proximos-14-dias">10.6 Pendientes en los próximos 14 días</h2>
+<p>La última lista son las actividades pendientes programadas en los próximos <strong>14 días</strong>, con su fecha. Cada título es un enlace directo a la actividad.</p>
+<p class="nota"><strong>Nota:</strong> si no hay nada en esa ventana, la lista no aparece: menos ruido es mejor cuando no hay tareas.</p>
+<h2 id="sec-11-10-7-problemas-frecuentes">10.7 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>El monto vendido no coincide con un reporte de cotizaciones aceptadas</td><td>El panel cuenta oportunidades ganadas; el reporte cuenta cotizaciones</td><td>Son métricas distintas por diseño</td></tr><tr><td>"No hay oportunidades ganadas cerradas en este período"</td><td>Nadie cerró un negocio en esas fechas</td><td>Revise el filtro de fechas o cierre las oportunidades</td></tr><tr><td>Las gráficas no cambian al cambiar el filtro</td><td>Usan ventanas fijas de 6 y 12 meses</td><td>Es lo esperado</td></tr><tr><td>El panel no muestra una sección</td><td>Su rol no tiene ese permiso</td><td>Con rol Consulta ve menos secciones</td></tr><tr><td>Escribí 30/02/2026 y el filtro se reinició</td><td>Esa fecha no existe</td><td>Corrija la fecha: un día inexistente se descarta</td></tr><tr><td>Puse una fecha desde posterior a la hasta</td><td>Rango inválido</td><td>El sistema vuelve al período predeterminado</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-12-11-reportes">11. Reportes</h1>
+<p>Los reportes contestan cuatro preguntas: <strong>cuánto se ganó</strong>, <strong>cómo está el embudo</strong>, <strong>qué se emitió</strong> y <strong>qué cartera existe</strong>. Cada reporte tiene su conjunto de filtros, sus notas al pie y su exportación a CSV.</p>
+<h2 id="sec-12-11-1-abrir-los-reportes">11.1 Abrir los reportes</h2>
+<p><code>[Reportes]</code> en el menú lateral. Todo el módulo exige el permiso de lectura de reportes, que tienen los tres roles: administrador, comercial y consulta.</p>
+<p>La pantalla tiene cuatro pestañas —Ventas, Oportunidades, Cotizaciones y Clientes—, una barra de filtros con los filtros que apliquen al reporte elegido y, debajo, la tabla de resultados con los totales al final.</p>
+<p><strong>Todos los filtros viven en la URL.</strong> Si marca o comparte la dirección de la barra del navegador, la consulta exacta queda guardada, y el botón <code>[Descargar CSV]</code> reutiliza esos mismos parámetros.</p>
+<h2 id="sec-12-11-2-reporte-de-ventas">11.2 Reporte de ventas</h2>
+<p><strong>Qué es:</strong> oportunidades <strong>ganadas</strong>, por fecha de cierre. Es el reporte de lo que el negocio ganó, no de lo que se facturó: el sistema no registra cobros.</p>
+<p><strong>Filtros:</strong> Desde / Hasta (fecha de cierre), Responsable y Cliente.</p>
+<p><strong>Columnas:</strong> Fecha de cierre, Cliente, Oportunidad, Etapa, Responsable, Moneda y Monto.</p>
+<p><strong>Totales:</strong> la cantidad de ventas registradas y el acumulado <strong>por moneda</strong>.</p>
+<p><strong>Notas al pie:</strong> <em>"Solo cuenta oportunidades ganadas con fecha de cierre dentro del rango"</em> y, si no puso fechas, <em>"Sin rango de fechas: se incluye todo el historial de ventas"</em>.</p>
+<h2 id="sec-12-11-3-reporte-de-oportunidades">11.3 Reporte de oportunidades</h2>
+<p><strong>Qué es:</strong> el estado del embudo: cuántas oportunidades hay, en qué etapa y cuáles se cerraron.</p>
+<p><strong>Filtros:</strong> Desde / Hasta (fecha de <strong>creación</strong> de la oportunidad), Responsable, Cliente y Estado (abiertas, ganadas o perdidas).</p>
+<p><strong>Nota al pie:</strong> <em>"El rango de fechas aplica a la creación de la oportunidad, no a su cierre"</em>. Si quiere medir el embudo que existía en una fecha, filtre por creación; para lo que se cerró en una fecha, use el reporte de ventas.</p>
+<p><strong>Columnas:</strong> Creada, Cliente, Oportunidad, Etapa, Estado, Responsable, Cerrada, Cierre previsto, Moneda, Monto y Probabilidad.</p>
+<p><strong>Totales:</strong> el desglose por estado (cuántas abiertas, ganadas y perdidas) y el acumulado por moneda.</p>
+<h2 id="sec-12-11-4-reporte-de-cotizaciones">11.4 Reporte de cotizaciones</h2>
+<p><strong>Qué es:</strong> qué documentos se emitieron y en qué estado están.</p>
+<p><strong>Filtros:</strong> Desde / Hasta (fecha de creación), Responsable (quien creó el documento), Cliente y Estado (borrador, enviada, aceptada, rechazada o vencida).</p>
+<p><strong>Columnas:</strong> Creada, Número, Cliente, Estado, Creada por, Válida hasta, Moneda, Subtotal, Descuentos, Impuestos y Total.</p>
+<p><strong>Totales:</strong> el desglose por estado y el acumulado por moneda, calculados sobre todas las cotizaciones del filtro y no solo sobre las filas de la página.</p>
+<h2 id="sec-12-11-5-reporte-de-clientes">11.5 Reporte de clientes</h2>
+<p><strong>Qué es:</strong> la cartera: quién está dado de alta, qué tan activa está y cuánto se le ha ganado.</p>
+<p><strong>Filtros:</strong> Desde / Hasta (fecha de <strong>alta</strong> del cliente), Responsable y Estado del cliente (activos o inactivos).</p>
+<p><strong>Columnas:</strong> Alta, Cliente, Tipo, Identificación, Correo, Teléfono, Estado, Contactos, Oportunidades, Cotizaciones, <strong>Ganado CRC</strong> y <strong>Ganado USD</strong>.</p>
+<p><strong>Totales:</strong> clientes listados, activos e inactivos. Los totales de lo ganado solo aparecen si hay ventas en esa moneda, con el conteo de ventas al lado.</p>
+<p class="nota"><strong>Nota:</strong> el filtro por responsable muestra los clientes que tienen <strong>al menos una oportunidad a nombre de ese usuario</strong>: un cliente no tiene dueño propio. Para ver toda la cartera, deje el responsable vacío.</p>
+<h2 id="sec-12-11-6-descargar-a-csv">11.6 Descargar a CSV</h2>
+<ol><li>Deje los filtros como los quiere ver en pantalla.</li><li>Pulse <code>[Descargar CSV]</code>.</li></ol>
+<p>El archivo sale con exactamente el criterio del reporte visible. Detalles que conviene conocer:</p>
+<ul><li><strong>Separador <code>;</code></strong> y <strong>BOM UTF-8</strong>, para que Excel en español abra columnas separadas y tildes correctas.</li><li>Los <strong>montos van como número plano</strong> (<code>125000.50</code>), sin símbolo ni separador de miles, para poder sumar y filtrar en la hoja.</li><li>Los totales van en <strong>filas finales</strong> con su etiqueta, no en una columna aparte: así se leen como nota y no ensucian los datos al importar.</li><li>La primera fila son los encabezados de columna.</li></ul>
+<p class="nota"><strong>Nota:</strong> las columnas de CRC y USD <strong>nunca se suman entre sí</strong>, ni en pantalla ni en el CSV. Para consolidar, use en la hoja el tipo de cambio que defina su empresa.</p>
+<h2 id="sec-12-11-7-problemas-frecuentes">11.7 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>El reporte de ventas sale vacío</td><td>No hay oportunidades ganadas cerradas en el rango</td><td>Revise fechas de cierre y estado de las oportunidades</td></tr><tr><td>Falta un total de moneda</td><td>Solo se muestra el total de las monedas con datos</td><td>Es intencional: evita columnas de ceros engañosas</td></tr><tr><td>No aparece un comercial en el filtro</td><td>El usuario está desactivado</td><td>El filtro lista solo usuarios activos</td></tr><tr><td>No todo el archivo aparece en una columna</td><td>Excel usa coma como separador</td><td>Use el asistente de importación y elija <code>;</code></td></tr><tr><td>Las tildes salen raras en el CSV</td><td>Se abrió en un editor sin UTF-8</td><td>Ábralo en Excel o LibreOffice como UTF-8</td></tr><tr><td>El CSV no coincide con lo que veo</td><td>Cambió algún filtro entre ver y descargar</td><td>Vuelva a aplicar los filtros antes de exportar</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-13-12-busqueda-y-filtrado">12. Búsqueda y filtrado</h1>
+<p>Todos los listados del sistema (clientes, contactos, productos, oportunidades y cotizaciones) traen la misma barra de filtros: un campo de búsqueda, filtros por estado y otros atributos, y un rango de fechas. Este capítulo explica cómo funciona esa barra y qué buscar en cada módulo.</p>
+<h2 id="sec-13-12-1-como-funciona-la-barra-de-filtros">12.1 Cómo funciona la barra de filtros</h2>
+<ul><li><strong>[Filtrar]</strong> aplica todo lo que esté escrito en la barra. No hay que ir campo por campo.</li><li><strong><code>[Limpiar]</code></strong> aparece solo cuando hay algún filtro puesto, y devuelve el listado completo.</li><li><strong>Los filtros viven en la dirección del navegador.</strong> Si marca o copia la URL, la consulta exacta queda guardada, y sirve para compartirla o para volver a ella con el botón de atrás.</li><li><strong>Al cambiar un filtro se vuelve a la primera página</strong>: si filtraba la página 3 y narrowa más, no puede quedar en una página que ya no existe.</li><li>El buscador es <strong>"contiene"</strong>: escribir <code>sol</code> encuentra <em>"Corporación Sol"</em>. <strong>No distingue mayúsculas ni acentos</strong>: <code>consultoria</code> encuentra <em>"Consultoría"</em> y <code>telefono</code> encuentra <em>"Teléfono"</em>.</li></ul>
+<p class="nota"><strong>Nota:</strong> los filtros se combinan con <strong>Y</strong>, no con <strong>O</strong>. Si pide cliente <em>Alfa</em> <strong>y</strong> estado <em>Activo</em>, la lista muestra solo los clientes Alfa que estén activos. Para alternativas del mismo campo, use las casillas múltiples de la tabla cuando las haya, o haga dos consultas.</p>
+<h2 id="sec-13-12-2-clientes">12.2 Clientes</h2>
+<table><thead><tr><th>Campo</th><th>Busca en</th></tr></thead><tbody><tr><td>Buscar</td><td>Nombre, correo, teléfono e identificación</td></tr><tr><td>Tipo</td><td>Persona física o empresa</td></tr><tr><td>Estado</td><td>Activos, inactivos o todos</td></tr><tr><td>Alta desde / Alta hasta</td><td>Fecha de alta del cliente</td></tr></tbody></table>
+<p>Ejemplos: <code>506</code> encuentra el teléfono; <code>3-101</code> encuentra una cédula; escribir <em>Sol</em> + <em>Empresa</em> + activo devuelve las empresas llamadas Sol que están activas.</p>
+<h2 id="sec-13-12-3-contactos">12.3 Contactos</h2>
+<table><thead><tr><th>Campo</th><th>Busca en</th></tr></thead><tbody><tr><td>Buscar</td><td>Nombre, apellido, teléfono, correo, cargo y nombre del cliente</td></tr><tr><td>Cliente</td><td>Una cuenta en concreto</td></tr><tr><td>Estado</td><td>Activos, inactivos o todos</td></tr><tr><td>Alta desde / Alta hasta</td><td>Fecha de alta del contacto</td></tr></tbody></table>
+<p>Ejemplo: buscando el nombre de un cliente aparecen todos sus contactos, sin tener que entrar a la ficha del cliente.</p>
+<h2 id="sec-13-12-4-productos-y-servicios">12.4 Productos y servicios</h2>
+<table><thead><tr><th>Campo</th><th>Busca en</th></tr></thead><tbody><tr><td>Buscar</td><td>Código, nombre y descripción</td></tr><tr><td>Tipo</td><td>Productos, servicios o ambos</td></tr><tr><td>Categoría</td><td>Una categoría del catálogo</td></tr><tr><td>Estado</td><td>Vigentes, inactivos o todos</td></tr><tr><td>Alta desde / Alta hasta</td><td>Fecha de alta en el catálogo</td></tr></tbody></table>
+<p>Ejemplo: buscar <code>licencia</code> con filtro <em>Servicios</em> y una categoría concreta devuelve solo los servicios de licencias de esa categoría dados de alta en ese período.</p>
+<h2 id="sec-13-12-5-oportunidades">12.5 Oportunidades</h2>
+<table><thead><tr><th>Campo</th><th>Busca en</th></tr></thead><tbody><tr><td>Buscar</td><td>Nombre, descripción, notas, <strong>nombre del cliente</strong>, contacto y responsable</td></tr><tr><td>Estado</td><td>Abiertas, ganadas o perdidas</td></tr><tr><td>Etapa</td><td>La etapa actual del proceso</td></tr><tr><td>Cliente</td><td>Una cuenta en concreto</td></tr><tr><td>Responsable</td><td>El comercial asignado</td></tr><tr><td>Creada desde / Creada hasta</td><td>Fecha de creación de la oportunidad</td></tr></tbody></table>
+<p class="nota"><strong>Nota:</strong> el rango de fechas es por <strong>creación</strong>, no por cierre. Para saber qué se cerró en un período, use el <a href="#sec-12-11-reportes">reporte de ventas</a>.</p>
+<p>Ejemplo: escribir el nombre del comercial con el estado <em>Abiertas</em> devuelve exactamente su cartera viva.</p>
+<h2 id="sec-13-12-6-cotizaciones">12.6 Cotizaciones</h2>
+<table><thead><tr><th>Campo</th><th>Busca en</th></tr></thead><tbody><tr><td>Buscar</td><td>Número, notas internas, condiciones, <strong>nombre del cliente</strong>, contacto y creador</td></tr><tr><td>Estado</td><td>Borrador, enviada, aceptada, rechazada o vencida</td></tr><tr><td>Cliente</td><td>Una cuenta en concreto</td></tr><tr><td>Creador</td><td>Quién preparó el documento</td></tr><tr><td>Creadas desde / Creadas hasta</td><td>Fecha de creación del documento</td></tr></tbody></table>
+<p>Ejemplo: buscar el nombre de un cliente con el estado <em>Aceptada</em> devuelve justo lo que se le aceptó.</p>
+<h2 id="sec-13-12-7-filtrar-por-fechas">12.7 Filtrar por fechas</h2>
+<ul><li>Las dos fechas son <strong>independientes</strong>: puede filtrar solo desde, solo hasta, o ambas.</li><li><strong>"Hasta" incluye el día completo.</strong> Un filtro del 4 al 6 incluye todo el día 6, no solo la madrugada.</li><li>Si no pone ninguna fecha, el listado trae todo el historial.</li><li>Si invierte el rango (desde posterior a hasta), el sistema <strong>ignora el rango</strong> y muestra la lista completa: es mejor que una lista vacía sin explicación.</li><li>Si escribe una fecha que no existe (30/02/2026), se descarta sin más.</li></ul>
+<p class="nota"><strong>Nota:</strong> las fechas se cuentan en la hora local de la oficina. El sistema no convierte a zonas horarias.</p>
+<h2 id="sec-13-12-8-combinar-criterios">12.8 Combinar criterios</h2>
+<p>Todos los filtros de la barra se pueden usar juntos. Ejemplos reales:</p>
+<table><thead><tr><th>Quiero…</th><th>Cómo lo hago</th></tr></thead><tbody><tr><td>Oportunidades abiertas de Ana creadas este mes</td><td>opportunities: <code>Ana</code> + Estado <em>Abiertas</em> + Creada desde/hasta</td></tr><tr><td>Cotizaciones enviadas a un cliente este trimestre</td><td>Cotizaciones: nombre del cliente + Estado <em>Enviada</em> + rango de fechas</td></tr><tr><td>Servicios vigentes de una categoría</td><td>Productos: Tipo <em>Servicio</em> + Categoría + Estado <em>Vigentes</em></td></tr><tr><td>Clientes nuevos de una empresa</td><td>Clientes: <code>q</code> con parte del nombre + Tipo <em>Empresa</em> + Alta desde/hasta</td></tr></tbody></table>
+<h2 id="sec-13-12-9-problemas-frecuentes">12.9 Problemas frecuentes</h2>
+<table><thead><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>La lista sale vacía</td><td>La combinación es demasiado restrictiva</td><td>Quite filtros de a uno hasta dar con el que manda</td></tr><tr><td>No aparece algo que sé que existe</td><td>Está fuera del rango de fechas o tiene otro estado</td><td>Use <code>[Limpiar]</code> y revise el rango</td></tr><tr><td>Escribí un rango al revés y veo todo</td><td>Se descartó el rango</td><td>Corrija el orden de las fechas</td></tr><tr><td>Busqué con tilde y sin tilde y da igual</td><td>La búsqueda las ignora a propósito</td><td>Es lo cómodo: <code>consultoria</code> encuentra <em>Consultoría</em></td></tr><tr><td>Cambié un filtro y perdí la página 3</td><td>Cada filtro vuelve a la primera página</td><td>Use el botón de atrás del navegador</td></tr></tbody></table></section>
+<section class="capitulo"><h1 id="sec-14-apendice-a-glosario">Apéndice A · Glosario</h1>
+<table><thead><tr><th>Término</th><th>Qué significa</th></tr></thead><tbody><tr><td>Actividad</td><td>Seguimiento con fecha: llamada, reunión, visita, correo. Puede tener cliente, contacto y oportunidad</td></tr><tr><td>Cierre previsto</td><td>Fecha tentativa en que debería cerrarse una oportunidad</td></tr><tr><td>Cliente</td><td>Empresa o persona a la que se le vende. Es la cuenta, no el contacto</td></tr><tr><td>Contacto</td><td>Persona concreta dentro de un cliente</td></tr><tr><td>Cotización</td><td>Documento comercial con líneas, impuestos y total, que sigue estados</td></tr><tr><td>Etapa</td><td>Columna del proceso de venta donde está una oportunidad</td></tr><tr><td>Generada / Enviada / Aceptada / Rechazada / Vencida</td><td>Estados de una cotización</td></tr><tr><td>Oportunidad ganada / perdida</td><td>Oportunidad cerrada a favor o en contra. Su fecha de cierre es la que cuenta en ventas</td></tr><tr><td>Linea libre</td><td>Línea de cotización escrita a mano, sin producto del catálogo</td></tr><tr><td>Moneda base</td><td>La moneda en la que se guarda el precio de un producto del catálogo</td></tr><tr><td>Pipeline</td><td>Tablero de oportunidades agrupadas por etapa</td></tr><tr><td>Producto / Servicio</td><td>Registro del catálogo. El servicio se cobra por hora, mes, proyecto o similar</td></tr><tr><td>Responsable</td><td>Comercial asignado a la oportunidad o a la actividad</td></tr><tr><td>Subtotal</td><td>Suma de las líneas antes de descuentos e impuestos de la cotización</td></tr><tr><td>Total</td><td>Subtotal menos descuentos más impuestos: lo que debe pagar el cliente</td></tr><tr><td>Vencida</td><td>Cotización cuya fecha de validez pasó, o actividad pendiente cuya fecha ya pasó</td></tr></tbody></table>
+<h1 id="sec-14-apendice-b-roles-y-permisos">Apéndice B · Roles y permisos</h1>
+<table><thead><tr><th>Permiso</th><th>Administrador</th><th>Comercial</th><th>Consulta</th></tr></thead><tbody><tr><td>Ver clientes, contactos, productos, oportunidades, actividades, cotizaciones y reportes</td><td>Sí</td><td>Sí</td><td>Sí</td></tr><tr><td>Crear y editar clientes, contactos, oportunidades y actividades</td><td>Sí</td><td>Sí</td><td>No</td></tr><tr><td>Crear y editar cotizaciones</td><td>Sí</td><td>Sí</td><td>No</td></tr><tr><td>Crear y editar productos y servicios</td><td>Sí</td><td>No</td><td>No</td></tr><tr><td>Administrar etapas y tipos de actividad</td><td>Sí</td><td>No</td><td>No</td></tr><tr><td>Configurar la empresa</td><td>Sí</td><td>No</td><td>No</td></tr><tr><td>Administrar usuarios</td><td>Sí</td><td>No</td><td>No</td></tr></tbody></table>
+<p class="nota"><strong>Nota:</strong> un comercial puede consultar el catálogo pero no modificarlo. Si necesita corregir un precio o agregar un producto, eso lo hace el administrador.</p>
+<h1 id="sec-14-apendice-c-estados-y-transiciones">Apéndice C · Estados y transiciones</h1>
+<p><strong>Oportunidades:</strong> Abierta → Ganada o Perdida. Cualquiera de las dos se puede reabrir y vuelve a Abierta.</p>
+<p><strong>Cotizaciones:</strong></p>
+<table><thead><tr><th>Desde</th><th>Puede pasar a</th></tr></thead><tbody><tr><td>Borrador</td><td>Enviada, Vencida</td></tr><tr><td>Enviada</td><td>Aceptada, Rechazada, Vencida, Borrador</td></tr><tr><td>Aceptada</td><td>Borrador, Vencida</td></tr><tr><td>Rechazada</td><td>Borrador, Enviada</td></tr><tr><td>Vencida</td><td>Borrador, Enviada</td></tr></tbody></table>
+<p><strong>Actividades:</strong> Pendiente → Completada o Cancelada, y de vuelta a Pendiente con <code>[Reabrir como pendiente]</code>.</p>
+<p><strong>Clientes, contactos y productos:</strong> Activo ⇄ Inactivo. No se borran: se desactivan para que el historial siga disponible.</p>
+<h1 id="sec-14-apendice-d-reglas-de-fechas-y-monedas">Apéndice D · Reglas de fechas y monedas</h1>
+<p><strong>Fechas</strong></p>
+<ul><li>Todo se cuenta en la hora local de la oficina. No hay conversión de zona horaria.</li><li>"Hasta" siempre incluye el día completo.</li><li>Un día se compara de 00:00:00 a 23:59:59.999: ningún registro queda fuera por un segundo de diferencia.</li><li>Cuando un reporte dice "fecha de creación" o "fecha de cierre", el filtro se refiere exactamente a esa fecha, no a otra.</li></ul>
+<p><strong>Dinero</strong></p>
+<ul><li>Los montos se guardan con dos decimales exactos, nunca como número flotante.</li><li>El sistema <strong>nunca suma colones y dólares</strong>. Donde hay dos monedas, muestra subtotales separados y lo dice con claridad.</li><li>Para consolidar hace falta un tipo de cambio, y esa decisión es de la empresa, no del sistema.</li><li>En los CSV los montos van como número plano (<code>125000.50</code>), sin símbolo ni separador de miles, para poder trabajar con ellos en la hoja.</li></ul>
+<h1 id="sec-14-apendice-e-atajos-y-consejos-de-uso">Apéndice E · Atajos y consejos de uso</h1>
+<ul><li><strong>Marque la URL.</strong> Casi todas las pantallas aceptan filtros en la barra de direcciones: filtre lo que necesite y comparta ese enlace con quien tenga que verlo.</li><li><strong>Use <code>[Limpiar]</code></strong> para volver a ver todo; aparece solo cuando hay filtros.</li><li><strong>El filtro se queda con la consulta.</strong> Por eso un reporte se puede volver a pedir meses después con los mismos criterios.</li><li><strong>Casi nada se borra.</strong> Clientes, contactos, productos y oportunidades se desactivan en vez de eliminarse. Lo único que se elimina es una cotización en <strong>borrador</strong>, y el sistema pide confirmación. Una cotización ya enviada no se borra: se devuelve a borrador y queda registrado.</li><li><strong>Busque por cualquier campo.</strong> El mismo texto puede buscar por nombre, teléfono, correo o el nombre del cliente o del comercial.</li></ul>
+<h1 id="sec-14-apendice-f-preguntas-frecuentes-generales">Apéndice F · Preguntas frecuentes generales</h1>
+<p><strong>¿Se puede trabajar desde el celular?</strong> Sí. La interfaz se adapta a pantallas angostas: los listados ocultan columnas secundarias para que la tabla siga siendo legible.</p>
+<p><strong>¿Necesito internet fuera de la oficina?</strong> Sí: el sistema se usa por navegador y necesita conexión.</p>
+<p><strong>¿Puedo abrir el sistema en varios equipos a la vez?</strong> Sí, con el mismo usuario. La sesión dura 7 días desde el último acceso en cada equipo.</p>
+<p><strong>¿Qué pasa si escribo algo y no guardé?</strong> Se pierde: los formularios guardan solo al pulsar el botón. Si el trabajo es largo, guarde seguido.</p>
+<p><strong>¿Quién puede ver los montos?</strong> Los tres roles. El sistema no tiene una vista reducida de números: si puede ver el registro, ve su monto.</p>
+<p><strong>¿Se puede corregir una cotización ya enviada?</strong> Sí, volviendo a borrador desde su panel de acciones. Queda registrado que se devolvió, y el documento que el cliente ya vio sigue siendo el mismo.</p>
+<p><strong>¿Los totales del panel y de los reportes son iguales?</strong> No siempre, y es a propósito: el panel cuenta oportunidades ganadas cerradas y el reporte de ventas también, pero los demás reportes cuentan otras cosas (cotizaciones emitidas, cartera). Compare usando el mismo criterio.</p></section>
+</body>
+</html>
