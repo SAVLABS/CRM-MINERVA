@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { ActivityStatus } from '@/generated/prisma/enums';
 import { ACTIVITY_PRIORITY_LABELS, ACTIVITY_STATUS_LABELS } from '@/lib/labels';
@@ -106,7 +105,7 @@ export default async function ActividadesPage({ searchParams }: PageProps<'/acti
   ]);
 
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const puedeEditar = can(actor.role, 'activities:write');
+  const puedeEditar = userHas(actor, 'activities:write');
   const ahora = ahoraMs();
 
   const totalTodas = pendientes + completadas + canceladas;

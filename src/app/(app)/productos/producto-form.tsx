@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from 'react';
 import { Field, FormMessage, SelectField, SubmitButton, TextareaField } from '@/components/form';
-import { CURRENCY_LABELS, PRODUCT_UNIT_SUGGESTIONS, toOptions } from '@/lib/labels';
+import { CURRENCY_LABELS, toOptions } from '@/lib/labels';
 import { createProductAction, updateProductAction, type ActionState } from './actions.server';
 
 export type ProductFormValues = {
@@ -15,7 +15,7 @@ export type ProductFormValues = {
   price: string;
   taxRate: string;
   currency: string;
-  unit: string;
+  unitId: string;
   categoryId: string;
 };
 
@@ -23,9 +23,11 @@ const NUEVA = '__nueva__';
 
 export function ProductForm({
   categories,
+  units,
   product,
 }: {
   categories: { id: string; name: string }[];
+  units: { id: string; name: string }[];
   product?: ProductFormValues;
 }) {
   const editing = Boolean(product);
@@ -103,14 +105,13 @@ export function ProductForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field
+        <SelectField
           label="Unidad de medida"
-          name="unit"
-          defaultValue={product?.unit ?? 'UNIDAD'}
+          name="unitId"
+          defaultValue={product?.unitId ?? ''}
+          options={units.map((u) => ({ value: u.id, label: u.name }))}
           required
-          maxLength={30}
-          options={PRODUCT_UNIT_SUGGESTIONS}
-          hint="RF-042"
+          hint="RF-042. Las unidades se administran en Configuración → Unidades de medida."
         />
         <div>
           <SelectField

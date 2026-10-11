@@ -82,25 +82,6 @@ export const PRODUCT_TYPE_LABELS = {
   servicio: 'Servicio',
 } as const;
 
-/**
- * RF-042: unidades sugeridas. El campo no las restringe; son solo ayuda para no
- * escribir "unidad", "Unidad", "UNID" y "unidades" como si fueran lo mismo.
- */
-export const PRODUCT_UNIT_SUGGESTIONS = [
-  'UNIDAD',
-  'SERVICIO',
-  'HORA',
-  'DÍA',
-  'MES',
-  'KG',
-  'GRAMO',
-  'LITRO',
-  'METRO',
-  'CAJA',
-  'PAQUETE',
-  'SACO',
-];
-
 /** Convierte un enum de Prisma en opciones para `<SelectField>`. */
 export function toOptions<T extends string>(labels: Record<T, string>) {
   return (Object.keys(labels) as T[]).map((value) => ({ value, label: labels[value] }));

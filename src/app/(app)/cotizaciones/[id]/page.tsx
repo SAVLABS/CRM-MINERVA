@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { QuotationStatus } from '@/generated/prisma/enums';
 import { DISCOUNT_TYPE_LABELS, QUOTATION_STATUS_LABELS } from '@/lib/labels';
 import { formatDateOnly, formatDateTime, formatMoney } from '@/lib/utils';
@@ -34,7 +33,7 @@ export default async function CotizacionPage({ params }: PageProps<'/cotizacione
 
   if (!cotizacion) notFound();
 
-  const puedeEditar = can(actor.role, 'quotations:write');
+  const puedeEditar = userHas(actor, 'quotations:write');
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
   // RF-091: vencida es una condición de la fecha, no un estado que se escriba

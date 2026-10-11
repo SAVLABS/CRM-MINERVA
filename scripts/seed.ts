@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/auth/password';
+import { DEFAULT_SYSTEM_ROLES } from '@/lib/permissions';
 import {
   ActivityPriority,
   ActivityStatus,
@@ -10,7 +11,6 @@ import {
   IdentificationType,
   OpportunityStatus,
   QuotationStatus,
-  Role,
 } from '@/generated/prisma/enums';
 
 /**
@@ -28,6 +28,33 @@ function daysFromNow(days: number): Date {
 async function seed() {
   const passwordHash = await hashPassword(PASSWORD);
 
+  // --- RF-009/RF-010: roles de fábrica -------------------------------------
+  // Se crean por id fijo (r_def_*) solo si no existen. Si un administrador los
+  // renombró o les cambió los permisos, el seed no los toca (update: {}).
+  const roles = await Promise.all(
+    DEFAULT_SYSTEM_ROLES.map((r) =>
+      prisma.role.upsert({
+        where: { id: r.id },
+        update: {},
+        create: {
+          id: r.id,
+          name: r.name,
+          description: r.description,
+          isSystem: true,
+          isAdmin: r.isAdmin,
+          isActive: true,
+          permissions: { create: r.permissions.map((p) => ({ permission: p })) },
+        },
+      }),
+    ),
+  );
+  const roleByKey = {
+    admin: roles.find((r) => r.id === DEFAULT_SYSTEM_ROLES[0].id)!,
+    comercial: roles.find((r) => r.id === DEFAULT_SYSTEM_ROLES[1].id)!,
+    consulta: roles.find((r) => r.id === DEFAULT_SYSTEM_ROLES[2].id)!,
+  };
+  console.info(`[seed] Roles listos: ${roles.length}`);
+
   // --- RF-01: usuarios (RF-006, RF-009) -------------------------------------
   // Sin id explícito: nada referencia a un usuario por literal, siempre por el
   // objeto devuelto. Asi el seed funciona igual sobre una base nueva o una que
@@ -35,15 +62,15 @@ async function seed() {
   const users = await Promise.all(
     (
       [
-        { email: 'admin@minerva.cr', firstName: 'Ana', lastName: 'Rojas', role: Role.ADMIN },
-        { email: 'comercial@minerva.cr', firstName: 'Luis', lastName: 'Vargas', role: Role.COMERCIAL },
-        { email: 'consulta@minerva.cr', firstName: 'Marta', lastName: 'Jiménez', role: Role.CONSULTA },
-        { email: 'demo@minerva.cr', firstName: 'Diego', lastName: 'Castro', role: Role.COMERCIAL },
+        { email: 'admin@minerva.cr', firstName: 'Ana', lastName: 'Rojas', roleId: roleByKey.admin.id },
+        { email: 'comercial@minerva.cr', firstName: 'Luis', lastName: 'Vargas', roleId: roleByKey.comercial.id },
+        { email: 'consulta@minerva.cr', firstName: 'Marta', lastName: 'Jiménez', roleId: roleByKey.consulta.id },
+        { email: 'demo@minerva.cr', firstName: 'Diego', lastName: 'Castro', roleId: roleByKey.comercial.id },
       ] as const
     ).map((u) =>
       prisma.user.upsert({
         where: { email: u.email },
-        update: { passwordHash, role: u.role, isActive: true },
+        update: { passwordHash, roleId: u.roleId, isActive: true },
         create: { ...u, passwordHash, phone: '+506 8000 0000', isActive: true },
       }),
     ),
@@ -105,34 +132,87 @@ async function seed() {
   const [tLlamada, tReunion, tTarea, tCorreo] = activityTypes;
   console.info(`[seed] Tipos de actividad listos: ${activityTypes.length}`);
 
-  // --- RF-04: categorías y productos (RF-043, RF-037) -----------------------
+  // --- RF-04: categorías, unidades de medida y productos (RF-043, RF-042, RF-037)
   const categories = await Promise.all(
     (
       [
+        { id: 'pc_auditoria', name: 'Auditoría' },
         { id: 'pc_consultoria', name: 'Consultoría' },
-        { id: 'pc_desarrollo', name: 'Desarrollo de software' },
-        { id: 'pc_soporte', name: 'Soporte y mantenimiento' },
+        { id: 'pc_capacitacion', name: 'Capacitación' },
+        { id: 'pc_cursos', name: 'Cursos' },
       ] as const
     ).map((c) => prisma.productCategory.upsert({ where: { name: c.name }, update: {}, create: c })),
   );
+  const categoriaPorNombre = new Map(categories.map((c) => [c.name, c]));
+
+  // Catálogo de unidades (RF-042): se crean por id fijo y el seed no pisa
+  // cambios del administrador (update: {}). Los nombres coinciden con la
+  // migración 20261011220000 para que el backfill haya quedado mapeado.
+  const unidades = await Promise.all(
+    (
+      [
+        { id: 'u_unidad', name: 'UNIDAD' },
+        { id: 'u_servicio', name: 'SERVICIO' },
+        { id: 'u_hora', name: 'HORA' },
+        { id: 'u_dia', name: 'DIA' },
+        { id: 'u_mes', name: 'MES' },
+        { id: 'u_ano', name: 'ANO' },
+        { id: 'u_proyecto', name: 'PROYECTO' },
+        { id: 'u_sesion', name: 'SESION' },
+        { id: 'u_curso', name: 'CURSO' },
+        { id: 'u_participante', name: 'PARTICIPANTE' },
+        { id: 'u_usuario', name: 'USUARIO' },
+        { id: 'u_visita', name: 'VISITA' },
+      ] as const
+    ).map((u) => prisma.unitOfMeasure.upsert({ where: { id: u.id }, update: {}, create: { ...u, isActive: true } })),
+  );
+  const unidadPorNombre = new Map(unidades.map((u) => [u.name, u]));
+
+  // Productos demo que ya no pertenecen al catálogo (categoría de software
+  // retirada). Se borran por id fijo del seed; las cotizaciones históricas lo
+  // referencian con SetNull y el seed reescribe sus líneas igual.
+  await prisma.product.deleteMany({
+    where: { id: { in: ['pr_desarrollo', 'pr_soporte', 'pr_licencia'] } },
+  });
 
   const products = await Promise.all(
     (
       [
-        { id: 'pr_consultoria', code: 'SRV-CONS-001', name: 'Consultoría en gestión comercial', description: 'Diagnóstico de proceso comercial y plan de mejora.', price: 850000, categoryId: categories[0].id, unit: 'HORA', taxRate: 13, isService: true },
-        { id: 'pr_desarrollo', code: 'SRV-DEV-001', name: 'Desarrollo de software a medida', description: 'Diseño, desarrollo y despliegue de aplicaciones/web.', price: 4500000, categoryId: categories[1].id, unit: 'PROYECTO', taxRate: 13, isService: true },
-        { id: 'pr_soporte', code: 'SRV-SOP-001', name: 'Plan de soporte mensual', description: 'Mantenimiento correctivo y evolutivo, SLA 4h.', price: 320000, categoryId: categories[2].id, unit: 'MES', taxRate: 13, isService: true },
-        { id: 'pr_licencia', code: 'LIC-ERP-001', name: 'Licencia plataforma CRM (usuario)', description: 'Licencia anual por usuario.', price: 145000, categoryId: categories[1].id, unit: 'USUARIO', taxRate: 13, isService: false },
+        { id: 'pr_auditoria', code: 'SRV-AUD-001', name: 'Auditoría de gestión comercial', description: 'Diagnóstico y evaluación del proceso comercial con plan de mejora.', price: 950000, categoria: 'Auditoría', unidad: 'HORA' },
+        { id: 'pr_consultoria', code: 'SRV-CONS-001', name: 'Consultoría en gestión comercial', description: 'Diagnóstico de proceso comercial y plan de mejora.', price: 850000, categoria: 'Consultoría', unidad: 'HORA' },
+        { id: 'pr_capacitacion', code: 'SRV-CAP-001', name: 'Capacitación en gestión comercial', description: 'Sesión de formación para el equipo comercial.', price: 250000, categoria: 'Capacitación', unidad: 'SESION' },
+        { id: 'pr_cursos', code: 'SRV-CUR-001', name: 'Curso CRM y gestión de ventas', description: 'Curso práctico por participante, con certificado.', price: 450000, categoria: 'Cursos', unidad: 'CURSO' },
       ] as const
-    ).map((p) =>
-      prisma.product.upsert({
+    ).map((p) => {
+      const categoria = categoriaPorNombre.get(p.categoria);
+      const unidad = unidadPorNombre.get(p.unidad);
+      if (!categoria || !unidad) throw new Error(`Seed: falta categoría/unidad para ${p.id}`);
+      return prisma.product.upsert({
         where: { code: p.code },
-        update: { price: p.price, taxRate: p.taxRate },
-        create: { ...p, currency: Currency.CRC, isActive: true },
-      }),
-    ),
+        update: { price: p.price, taxRate: 13, unitId: unidad.id, categoryId: categoria.id },
+        create: {
+          id: p.id,
+          code: p.code,
+          name: p.name,
+          description: p.description,
+          price: p.price,
+          taxRate: 13,
+          unitId: unidad.id,
+          categoryId: categoria.id,
+          currency: Currency.CRC,
+          isService: true,
+          isActive: true,
+        },
+      });
+    }),
   );
   console.info(`[seed] Productos listos: ${products.length}`);
+
+  // Categorías retiradas del catálogo (por pedido): se quitan de la base.
+  // Los productos que quedaran colgando de ellas quedan sin categoría (SetNull).
+  await prisma.productCategory.deleteMany({
+    where: { name: { in: ['Desarrollo de software', 'Soporte y mantenimiento'] } },
+  });
 
   // --- RF-02: clientes (RF-013, RF-014, RF-016) ------------------------------
   const clients = await Promise.all(
@@ -178,7 +258,7 @@ async function seed() {
       [
         { id: 'op_tecno_crm', name: 'CRM para gestión de compras', clientId: 'cl_tecno', contactId: 'ct_mario', stageId: sPropuesta.id, amount: 8400000, probability: 50, ownerId: comercial.id, expectedCloseDate: daysFromNow(21), status: OpportunityStatus.OPEN },
         { id: 'op_vitalis_crm', name: 'Plataforma de citas médicas', clientId: 'cl_vitalis', contactId: 'ct_patricia', stageId: sNegociacion.id, amount: 12500000, probability: 75, ownerId: comercial.id, expectedCloseDate: daysFromNow(12), status: OpportunityStatus.OPEN },
-        { id: 'op_sol_soporte', name: 'Contrato anual de soporte TI', clientId: 'cl_sol', contactId: 'ct_sofia', stageId: sGanada.id, amount: 3840000, probability: 100, ownerId: comercial.id, expectedCloseDate: daysFromNow(-14), status: OpportunityStatus.WON, closedAt: daysFromNow(-15) },
+        { id: 'op_sol_soporte', name: 'Programa anual de capacitación', clientId: 'cl_sol', contactId: 'ct_sofia', stageId: sGanada.id, amount: 3840000, probability: 100, ownerId: comercial.id, expectedCloseDate: daysFromNow(-14), status: OpportunityStatus.WON, closedAt: daysFromNow(-15) },
         { id: 'op_maria_erp', name: 'Sistema de facturación interno', clientId: 'cl_maria', contactId: null, stageId: sContacto.id, amount: 2200000, probability: 25, ownerId: admin.id, expectedCloseDate: daysFromNow(35), status: OpportunityStatus.OPEN },
         { id: 'op_tecno_web', name: 'Rediseño de sitio corporativo', clientId: 'cl_tecno', contactId: 'ct_mario', stageId: sPerdida.id, amount: 1500000, probability: 0, ownerId: comercial.id, expectedCloseDate: daysFromNow(-40), status: OpportunityStatus.LOST, closedAt: daysFromNow(-38), lostReason: 'Eligieron una agencia interna' },
         { id: 'op_vitalis_erp', name: 'Migración de ERP a la nube', clientId: 'cl_vitalis', contactId: 'ct_rafael', stageId: sProspecto.id, amount: 9600000, probability: 10, ownerId: admin.id, expectedCloseDate: daysFromNow(60), status: OpportunityStatus.OPEN },
@@ -206,7 +286,7 @@ async function seed() {
         { id: 'ac_reunion_vitalis', typeId: tReunion.id, title: 'Reunión con Dirección para definir alcance', clientId: 'cl_vitalis', contactId: 'ct_patricia', opportunityId: 'op_vitalis_crm', assigneeId: comercial.id, priority: ActivityPriority.URGENT, status: ActivityStatus.PENDING, scheduledAt: daysFromNow(2) },
         { id: 'ac_envio_propuesta', typeId: tCorreo.id, title: 'Enviar propuesta económica a TecnoSuministros', clientId: 'cl_tecno', contactId: 'ct_mario', opportunityId: 'op_tecno_crm', assigneeId: comercial.id, priority: ActivityPriority.MEDIUM, status: ActivityStatus.PENDING, scheduledAt: daysFromNow(-1) },
         { id: 'ac_tarea_erp', typeId: tTarea.id, title: 'Preparar questionnaire de requisitos', clientId: 'cl_maria', contactId: null, opportunityId: 'op_maria_erp', assigneeId: admin.id, priority: ActivityPriority.LOW, status: ActivityStatus.PENDING, scheduledAt: daysFromNow(5) },
-        { id: 'ac_visita_sol', typeId: activityTypes[4].id, title: 'Visita de entrega del proyecto de soporte', clientId: 'cl_sol', contactId: 'ct_sofia', opportunityId: 'op_sol_soporte', assigneeId: comercial.id, priority: ActivityPriority.MEDIUM, status: ActivityStatus.COMPLETED, scheduledAt: daysFromNow(-12), completedAt: daysFromNow(-12), outcome: 'Entregado y conforme. El cliente firmó el acta.' },
+        { id: 'ac_visita_sol', typeId: activityTypes[4].id, title: 'Visita de cierre del programa de capacitación', clientId: 'cl_sol', contactId: 'ct_sofia', opportunityId: 'op_sol_soporte', assigneeId: comercial.id, priority: ActivityPriority.MEDIUM, status: ActivityStatus.COMPLETED, scheduledAt: daysFromNow(-12), completedAt: daysFromNow(-12), outcome: 'Entregado y conforme. El cliente firmó el acta.' },
         { id: 'ac_llamada_tecno_web', typeId: tLlamada.id, title: 'Llamada de cierre del rediseño web', clientId: 'cl_tecno', contactId: 'ct_mario', opportunityId: 'op_tecno_web', assigneeId: comercial.id, priority: ActivityPriority.MEDIUM, status: ActivityStatus.COMPLETED, scheduledAt: daysFromNow(-39), completedAt: daysFromNow(-39), outcome: 'Perdida: el cliente contrató una agencia interna.' },
       ] as const
     ).map((a) =>
@@ -254,8 +334,8 @@ async function seed() {
       termsAndConditions: 'Validez 15 días. 50% al confirmar, 50% contra entrega. Plazo: 20 días hábiles.',
       validUntil: daysFromNow(10), sentAt: daysFromNow(-8), acceptedAt: daysFromNow(-6), rejectedAt: null,
       lines: [
-        { productId: 'pr_desarrollo', description: 'Desarrollo de software a medida — plataforma de citas médicas', quantity: 1, unitPrice: 10500000, taxRate: 13 },
-        { productId: 'pr_soporte', description: 'Plan de soporte mensual (3 meses de garantía)', quantity: 3, unitPrice: 320000, taxRate: 13 },
+        { productId: 'pr_auditoria', description: 'Auditoría de gestión comercial — proceso de citas médicas', quantity: 20, unitPrice: 950000, taxRate: 13 },
+        { productId: 'pr_capacitacion', description: 'Capacitación en gestión comercial — 8 sesiones', quantity: 8, unitPrice: 250000, taxRate: 13 },
       ],
     },
     {
@@ -266,8 +346,7 @@ async function seed() {
       validUntil: daysFromNow(6), sentAt: daysFromNow(-2), acceptedAt: null, rejectedAt: null,
       lines: [
         { productId: 'pr_consultoria', description: 'Consultoría en gestión comercial — diagnóstico inicial', quantity: 40, unitPrice: 850000, taxRate: 13 },
-        { productId: 'pr_desarrollo', description: 'Desarrollo de software a medida — CRM de compras', quantity: 1, unitPrice: 4800000, taxRate: 13 },
-        { productId: 'pr_licencia', description: 'Licencia plataforma CRM — 3 usuarios, primer año', quantity: 3, unitPrice: 145000, taxRate: 13 },
+        { productId: 'pr_cursos', description: 'Curso CRM y gestión de ventas — 3 participantes', quantity: 3, unitPrice: 450000, taxRate: 13 },
       ],
     },
     {
@@ -276,7 +355,7 @@ async function seed() {
       discountType: DiscountType.NONE, discountValue: 0,
       termsAndConditions: 'Renovación automática anual salvo aviso con 30 días de anticipación.',
       validUntil: daysFromNow(-10), sentAt: daysFromNow(-40), acceptedAt: daysFromNow(-30), rejectedAt: null,
-      lines: [{ productId: 'pr_soporte', description: 'Plan de soporte mensual — contrato anual', quantity: 12, unitPrice: 320000, taxRate: 13 }],
+      lines: [{ productId: 'pr_capacitacion', description: 'Programa anual de capacitación — 12 sesiones', quantity: 12, unitPrice: 250000, taxRate: 13 }],
     },
   ];
 

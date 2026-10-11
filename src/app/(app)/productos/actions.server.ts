@@ -36,8 +36,8 @@ const productSchema = z.object({
   // RF-041
   taxRate: z.string().min(1, 'El porcentaje de impuesto es obligatorio'),
   currency: z.enum([Currency.CRC, Currency.USD], { message: 'Moneda inválida.' }),
-  // RF-042
-  unit: z.string().trim().min(1, 'La unidad de medida es obligatoria').max(30),
+  // RF-042: unidad de medida (catálogo configurable en /configuracion/unidades)
+  unitId: z.string().min(1, 'Elegí la unidad de medida.'),
   // RF-043
   categoryId: z.string().min(1, 'Elegí la categoría.'),
   nuevaCategoria: z.string().trim().max(100, 'Máximo 100 caracteres.'),
@@ -53,7 +53,7 @@ function readProductForm(formData: FormData) {
     price: text('price'),
     taxRate: text('taxRate'),
     currency: text('currency'),
-    unit: text('unit'),
+    unitId: text('unitId'),
     categoryId: text('categoryId'),
     nuevaCategoria: text('nuevaCategoria'),
   };
@@ -82,6 +82,13 @@ async function resolverCategoria(categoryId: string, nuevaCategoria: string) {
     create: { name: nombre },
   });
   return { id: categoria.id };
+}
+
+/** RF-042: la unidad viene del catálogo configurable; si no existe no se acepta. */
+async function resolverUnidad(unitId: string) {
+  const unidad = await prisma.unitOfMeasure.findUnique({ where: { id: unitId } });
+  if (!unidad || !unidad.isActive) return { error: 'Elegí una unidad de medida válida.' };
+  return { id: unidad.id };
 }
 
 /** RF-038: el código identifica al producto y no se puede repetir. */
@@ -124,6 +131,9 @@ export async function createProductAction(
   const categoria = await resolverCategoria(data.categoryId, data.nuevaCategoria);
   if ('error' in categoria && categoria.error) return { error: categoria.error };
 
+  const unidad = await resolverUnidad(data.unitId);
+  if ('error' in unidad && unidad.error) return { error: unidad.error };
+
   if (await codeEnUso(data.code)) {
     return { error: `Ya existe un producto o servicio con el código ${data.code}.` };
   }
@@ -140,7 +150,7 @@ export async function createProductAction(
         price: precio.value!,
         taxRate: impuesto.value!,
         currency: data.currency,
-        unit: data.unit.trim().toUpperCase(),
+        unitId: unidad.id,
         categoryId: categoria.id,
       },
     });
@@ -184,6 +194,9 @@ export async function updateProductAction(
   const categoria = await resolverCategoria(data.categoryId, data.nuevaCategoria);
   if ('error' in categoria && categoria.error) return { error: categoria.error };
 
+  const unidad = await resolverUnidad(data.unitId);
+  if ('error' in unidad && unidad.error) return { error: unidad.error };
+
   if (await codeEnUso(data.code, id.data)) {
     return { error: `Ya existe un producto o servicio con el código ${data.code}.` };
   }
@@ -199,7 +212,7 @@ export async function updateProductAction(
         price: precio.value!,
         taxRate: impuesto.value!,
         currency: data.currency,
-        unit: data.unit.trim().toUpperCase(),
+        unitId: unidad.id,
         categoryId: categoria.id,
       },
     });

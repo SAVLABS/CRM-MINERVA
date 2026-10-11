@@ -3,7 +3,7 @@
 import { useActionState, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Field, FormMessage, SelectField, SubmitButton, TextareaField } from '@/components/form';
-import { CURRENCY_LABELS, DISCOUNT_TYPE_LABELS, PRODUCT_UNIT_SUGGESTIONS, toOptions } from '@/lib/labels';
+import { CURRENCY_LABELS, DISCOUNT_TYPE_LABELS, toOptions } from '@/lib/labels';
 import { calcularCotizacion, type LineaCotizacion } from '@/lib/cotizaciones';
 import { normalizeDecimal } from '@/lib/money';
 import { formatMoney } from '@/lib/utils';
@@ -90,6 +90,7 @@ export function CotizacionForm({
   condicionesPorDefecto,
   validezPorDefecto,
   asociacionInicial,
+  unidadesSugeridas = [],
 }: {
   products: ProductoCotizable[];
   clients: { id: string; name: string }[];
@@ -103,6 +104,8 @@ export function CotizacionForm({
   validezPorDefecto: string;
   /** Asociación heredada de la ficha desde la que se llega (RF-080/081/082). */
   asociacionInicial?: { clientId?: string; contactId?: string; opportunityId?: string };
+  /** Unidades del catálogo (RF-042) para sugerir en las líneas de la cotización. */
+  unidadesSugeridas?: string[];
 }) {
   const editing = Boolean(cotizacion?.id);
   const action = editing ? updateQuotationAction : createQuotationAction;
@@ -443,7 +446,7 @@ export function CotizacionForm({
           </table>
         </div>
         <datalist id="unidades-cotizacion">
-          {PRODUCT_UNIT_SUGGESTIONS.map((u) => (
+          {unidadesSugeridas.map((u) => (
             <option key={u} value={u} />
           ))}
         </datalist>

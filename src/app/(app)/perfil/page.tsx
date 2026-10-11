@@ -1,5 +1,4 @@
 import { requireUser } from '@/lib/auth/guards';
-import { ROLE_LABELS } from '@/lib/permissions';
 import { formatDateTime } from '@/lib/utils';
 import { ChangePasswordForm } from './password-form';
 
@@ -31,7 +30,7 @@ export default async function PerfilPage() {
           </div>
           <div>
             <dt className="text-xs font-medium uppercase tracking-wide text-minerva-muted">Rol</dt>
-            <dd className="mt-0.5 text-sm text-minerva-black">{ROLE_LABELS[user.role]}</dd>
+            <dd className="mt-0.5 text-sm text-minerva-black">{user.role.name}</dd>
           </div>
           <div>
             <dt className="text-xs font-medium uppercase tracking-wide text-minerva-muted">

@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { OpportunityStatus } from '@/generated/prisma/enums';
 import {
@@ -37,8 +36,8 @@ export default async function OportunidadPage({ params }: PageProps<'/oportunida
 
   if (!oportunidad) notFound();
 
-  const puedeEditar = can(actor.role, 'opportunities:write');
-  const puedeRegistrarActividad = can(actor.role, 'activities:write');
+  const puedeEditar = userHas(actor, 'opportunities:write');
+  const puedeRegistrarActividad = userHas(actor, 'activities:write');
   const monto = Number(oportunidad.amount);
   const probabilidad = Number(oportunidad.probability);
 
@@ -212,7 +211,7 @@ export default async function OportunidadPage({ params }: PageProps<'/oportunida
               <span className="text-xs text-minerva-muted">{oportunidad.quotations.length}</span>
             </div>
             {/* RF-082: la cotización hereda cliente y oportunidad. */}
-            {can(actor.role, 'quotations:write') && (
+            {userHas(actor, 'quotations:write') && (
               <Link href={`/cotizaciones/nuevo?oportunidad=${oportunidad.id}`}>
                 <Button className="px-3 py-1.5 text-xs">Nueva cotización</Button>
               </Link>

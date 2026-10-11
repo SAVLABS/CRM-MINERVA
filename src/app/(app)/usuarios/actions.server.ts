@@ -6,7 +6,6 @@ import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/auth/password';
 import { destroyAllSessionsForUser } from '@/lib/auth/session';
 import { requirePermission } from '@/lib/auth/guards';
-import { Role } from '@/generated/prisma/enums';
 
 export type ActionState = { error?: string; ok?: string };
 
@@ -22,17 +21,21 @@ const passwordSchema = z
   .min(10, 'La contraseña debe tener al menos 10 caracteres')
   .max(200, 'La contraseña es demasiado larga');
 
-// Mensaje propio: sin él Zod responde "Invalid option: expected one of ...".
-const roleSchema = z.enum(Role, { message: 'Elegí un rol válido.' });
+const roleSchema = z.string().trim().min(1, 'Elegí un rol.');
 
 /**
- * Cuenta cuántos administradores activos quedan. Si la operación que se está
- * por hacer dejaría la cuenta en cero, no se permite: sin ningún ADMIN con
- * `users:manage` no hay forma de volver a entrar a administrar nada.
+ * Cuenta cuántos usuarios activos pertenecen a un rol administrador
+ * (`isAdmin`). Si la operación que se está por hacer dejaría ese número en
+ * cero, no se permite: sin ningún administrador activo no hay forma de volver
+ * a entrar a administrar nada.
  */
 async function countActiveAdmins(exceptUserId?: string): Promise<number> {
   return prisma.user.count({
-    where: { role: Role.ADMIN, isActive: true, ...(exceptUserId ? { id: { not: exceptUserId } } : {}) },
+    where: {
+      isActive: true,
+      role: { isAdmin: true },
+      ...(exceptUserId ? { id: { not: exceptUserId } } : {}),
+    },
   });
 }
 
@@ -45,7 +48,7 @@ const createSchema = z.object({
   firstName: z.string().trim().min(1, 'El nombre es obligatorio').max(100),
   lastName: z.string().trim().min(1, 'El apellido es obligatorio').max(100),
   phone: z.string().trim().max(30).optional(),
-  role: roleSchema,
+  roleId: roleSchema,
   password: passwordSchema,
 });
 
@@ -61,21 +64,31 @@ export async function createUserAction(
     firstName: formData.get('firstName'),
     lastName: formData.get('lastName'),
     phone: formData.get('phone') || undefined,
-    role: formData.get('role'),
+    roleId: formData.get('roleId'),
     password: formData.get('password'),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? 'Datos inválidos' };
   }
 
-  const { email, firstName, lastName, phone, role, password } = parsed.data;
+  const { email, firstName, lastName, phone, roleId, password } = parsed.data;
+
+  const role = await prisma.role.findUnique({ where: { id: roleId } });
+  if (!role || !role.isActive) return { error: 'Elegí un rol válido.' };
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return { error: 'Ya existe un usuario con ese correo.' };
 
   try {
     await prisma.user.create({
-      data: { email, firstName, lastName, phone: phone ?? null, role, passwordHash: await hashPassword(password) },
+      data: {
+        email,
+        firstName,
+        lastName,
+        phone: phone ?? null,
+        roleId: role.id,
+        passwordHash: await hashPassword(password),
+      },
     });
   } catch (err) {
     if (isUniqueViolation(err)) return { error: 'Ya existe un usuario con ese correo.' };
@@ -93,7 +106,7 @@ const updateSchema = z.object({
   firstName: z.string().trim().min(1, 'El nombre es obligatorio').max(100),
   lastName: z.string().trim().min(1, 'El apellido es obligatorio').max(100),
   phone: z.string().trim().max(30).optional(),
-  role: roleSchema,
+  roleId: roleSchema,
 });
 
 /** RF-007: modificar la información de un usuario. */
@@ -109,24 +122,30 @@ export async function updateUserAction(
     firstName: formData.get('firstName'),
     lastName: formData.get('lastName'),
     phone: formData.get('phone') || undefined,
-    role: formData.get('role'),
+    roleId: formData.get('roleId'),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? 'Datos inválidos' };
   }
 
-  const { id, email, firstName, lastName, phone, role } = parsed.data;
+  const { id, email, firstName, lastName, phone, roleId } = parsed.data;
 
-  const target = await prisma.user.findUnique({ where: { id } });
+  const target = await prisma.user.findUnique({
+    where: { id },
+    include: { role: true },
+  });
   if (!target) return { error: 'Usuario no encontrado.' };
+
+  const role = await prisma.role.findUnique({ where: { id: roleId } });
+  if (!role || !role.isActive) return { error: 'Elegí un rol válido.' };
 
   // Quitarse el propio rol o desactivarse a uno mismo deja la cuenta
   // inmediatamente sin acceso a esta misma pantalla.
-  if (id === actor.id && role !== target.role) {
+  if (id === actor.id && roleId !== target.roleId) {
     return { error: 'No podés cambiar tu propio rol. Pedí que lo haga otro administrador.' };
   }
 
-  if (target.role === Role.ADMIN && role !== Role.ADMIN && (await countActiveAdmins(id)) === 0) {
+  if (target.role.isAdmin && !role.isAdmin && (await countActiveAdmins(id)) === 0) {
     return { error: 'No podés dejar el sistema sin ningún administrador activo.' };
   }
 
@@ -136,7 +155,7 @@ export async function updateUserAction(
   try {
     await prisma.user.update({
       where: { id },
-      data: { email, firstName, lastName, phone: phone ?? null, role },
+      data: { email, firstName, lastName, phone: phone ?? null, roleId: role.id },
     });
   } catch (err) {
     if (isUniqueViolation(err)) return { error: 'Ya existe otro usuario con ese correo.' };
@@ -223,14 +242,17 @@ export async function toggleUserActiveAction(
     return { error: 'Tenés que confirmar la casilla.' };
   }
 
-  const target = await prisma.user.findUnique({ where: { id } });
+  const target = await prisma.user.findUnique({
+    where: { id },
+    include: { role: true },
+  });
   if (!target) return { error: 'Usuario no encontrado.' };
 
   if (id === actor.id && !nextActive) {
     return { error: 'No podés desactivar tu propia cuenta.' };
   }
 
-  if (!nextActive && target.role === Role.ADMIN && target.isActive) {
+  if (!nextActive && target.role.isAdmin && target.isActive) {
     if ((await countActiveAdmins(id)) === 0) {
       return { error: 'No podés desactivar al último administrador activo.' };
     }

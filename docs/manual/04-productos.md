@@ -26,7 +26,7 @@ servicio; la diferencia está en la **unidad de medida** y en el tipo.
 | Precio de venta | Sí | En la moneda que elija |
 | Moneda | Sí | CRC o USD |
 | Impuesto (%) | Sí | Porcentaje, por ejemplo `13` para el 13 % |
-| Unidad de medida | Sí | `Unidad`, `Hora`, `Mes`, `Licencia`, `Kg`… |
+| Unidad de medida | Sí | Elija una de la lista del catálogo (ver 4.3) |
 | Descripción | No | Qué incluye, para qué sirve |
 
 3. `[Guardar]`.
@@ -35,7 +35,28 @@ servicio; la diferencia está en la **unidad de medida** y en el tipo.
 mismo producto. Si el sistema responde que el código ya existe, edite el producto
 que ya lo tiene en lugar de crear otro.
 
-## 4.3 Categorías
+## 4.3 Unidades de medida
+
+Cada producto o servicio se vende con una **unidad de medida** (`HORA`, `MES`,
+`PROYECTO`, `CURSO`…). Las unidades forman un catálogo propio que se administra
+en `[Configuración]` → `[Unidades de medida]` (solo quien tiene permiso de
+editar productos):
+
+- **Crear**: escriba el nombre y `[Guardar]`. El sistema lo guarda en mayúsculas
+  y no permite duplicados.
+- **Editar**: cambie el nombre de una unidad existente.
+- **Desactivar**: deja de ofrecerse al crear productos. Si hay productos que la
+  usan, el sistema lo advierte y pide confirmación.
+
+Al crear o editar un producto, la unidad se elige de esa lista. Si no está la
+que necesita, créela primero en `[Configuración]` → `[Unidades de medida]` y
+vuelva al formulario del producto.
+
+**Nota:** la unidad es solo referencia del catálogo. Cada línea de una
+cotización guarda su propia copia, así que editar o desactivar una unidad no
+altera cotizaciones ya creadas.
+
+## 4.4 Categorías
 
 - Las categorías se administran desde el propio formulario del producto: escriba
   el nombre de una nueva y se crea sola, reutilizándola si ya existe.
@@ -45,7 +66,7 @@ que ya lo tiene en lugar de crear otro.
 **Nota:** los productos sin categoría siguen siendo válidos; puede usarlos en
 cotizaciones. La categoría solo sirve para ordenar y filtrar el catálogo.
 
-## 4.4 Editar, vigencia y precios
+## 4.5 Editar, vigencia y precios
 
 - `[Editar]` cambia cualquier dato del producto.
 - **Desactivar** marca el registro como no vigente: deja de ofrecerse al crear
@@ -59,7 +80,7 @@ cotizaciones. La categoría solo sirve para ordenar y filtrar el catálogo.
 Cada línea guarda su propio precio, de modo que un documento ya enviado sigue
 mostrando lo que el cliente aceptó.
 
-## 4.5 Problemas frecuentes
+## 4.6 Problemas frecuentes
 
 | Síntoma | Causa | Qué hacer |
 | --- | --- | --- |

@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { ActivityStatus } from '@/generated/prisma/enums';
 import { ACTIVITY_PRIORITY_LABELS, ACTIVITY_STATUS_LABELS } from '@/lib/labels';
@@ -41,7 +40,7 @@ export default async function ActividadPage({ params }: PageProps<'/actividades/
 
   if (!actividad) notFound();
 
-  const puedeEditar = can(actor.role, 'activities:write');
+  const puedeEditar = userHas(actor, 'activities:write');
   const pendiente = actividad.status === ActivityStatus.PENDING;
   const vencida = pendiente && actividad.scheduledAt.getTime() < ahoraMs();
 

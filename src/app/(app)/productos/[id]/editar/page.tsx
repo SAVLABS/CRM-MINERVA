@@ -11,7 +11,10 @@ export default async function EditarProductoPage({ params }: PageProps<'/product
 
   const producto = await prisma.product.findUnique({
     where: { id },
-    include: { category: { select: { isActive: true } } },
+    include: {
+      category: { select: { isActive: true } },
+      unit: { select: { isActive: true } },
+    },
   });
   if (!producto) notFound();
 
@@ -24,6 +27,18 @@ export default async function EditarProductoPage({ params }: PageProps<'/product
         : producto.category?.isActive
           ? { isActive: true }
           : { id: producto.categoryId },
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true },
+  });
+
+  // Mismo criterio para la unidad de medida (RF-042).
+  const unidades = await prisma.unitOfMeasure.findMany({
+    where:
+      producto.unitId === null
+        ? { isActive: true }
+        : producto.unit?.isActive
+          ? { isActive: true }
+          : { id: producto.unitId },
     orderBy: { name: 'asc' },
     select: { id: true, name: true },
   });
@@ -42,6 +57,7 @@ export default async function EditarProductoPage({ params }: PageProps<'/product
       <div className="rounded-lg border border-minerva-border bg-minerva-white p-6 shadow-sm">
         <ProductForm
           categories={categorias}
+          units={unidades}
           product={{
             id: producto.id,
             code: producto.code,
@@ -52,7 +68,7 @@ export default async function EditarProductoPage({ params }: PageProps<'/product
             price: producto.price.toString(),
             taxRate: producto.taxRate.toString(),
             currency: producto.currency,
-            unit: producto.unit,
+            unitId: producto.unitId ?? '',
             categoryId: producto.categoryId ?? '',
           }}
         />

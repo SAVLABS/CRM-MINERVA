@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { fechaInput, paramFecha, rangoFechas, rangoValido } from '@/lib/filtros';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { QuotationStatus } from '@/generated/prisma/enums';
 import { QUOTATION_STATUS_LABELS } from '@/lib/labels';
@@ -136,7 +135,7 @@ export default async function CotizacionesPage({ searchParams }: PageProps<'/cot
   ]);
 
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const puedeEditar = can(actor.role, 'quotations:write');
+  const puedeEditar = userHas(actor, 'quotations:write');
   const totalTodas = borradores + enviadas + aceptadas + rechazadas + vencidas;
 
   const qs = (extra: Record<string, string>) => {

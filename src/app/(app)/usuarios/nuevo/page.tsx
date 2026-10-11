@@ -1,8 +1,15 @@
+import { prisma } from '@/lib/db';
 import { requirePermissionOrRedirect } from '@/lib/auth/guards';
 import { CreateUserForm } from './user-form';
 
 export default async function NuevoUsuarioPage() {
   await requirePermissionOrRedirect('users:manage');
+
+  const roles = await prisma.role.findMany({
+    where: { isActive: true },
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true },
+  });
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -14,7 +21,7 @@ export default async function NuevoUsuarioPage() {
       </div>
 
       <div className="rounded-lg border border-minerva-border bg-minerva-white p-6 shadow-sm">
-        <CreateUserForm />
+        <CreateUserForm roles={roles} />
       </div>
     </div>
   );

@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { fechaInput, paramFecha, rangoFechas, rangoValido } from '@/lib/filtros';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 
 const PAGE_SIZE = 25;
@@ -86,7 +85,7 @@ export default async function ContactosPage({ searchParams }: PageProps<'/contac
             {total === 1 ? 'en el filtro' : 'en el filtro'}
           </p>
         </div>
-        {can(actor.role, 'contacts:write') && (
+        {userHas(actor, 'contacts:write') && (
           <Link href="/contactos/nuevo">
             <Button variant="primary">Nuevo contacto</Button>
           </Link>

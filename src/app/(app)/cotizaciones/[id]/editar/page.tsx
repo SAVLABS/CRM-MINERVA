@@ -50,7 +50,7 @@ export default async function EditarCotizacionPage({
           price: true,
           taxRate: true,
           currency: true,
-          unit: true,
+          unit: { select: { name: true } },
         },
       }),
       prisma.companySetting.findUnique({ where: { id: 'singleton' } }),
@@ -61,6 +61,14 @@ export default async function EditarCotizacionPage({
   if (cotizacion.status !== QuotationStatus.DRAFT) {
     redirect(`/cotizaciones/${id}`);
   }
+
+  const unidadesSugeridas = (
+    await prisma.unitOfMeasure.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+      select: { name: true },
+    })
+  ).map((u) => u.name);
 
   const valores: CotizacionFormValues = {
     id: cotizacion.id,
@@ -115,7 +123,7 @@ export default async function EditarCotizacionPage({
             id: p.id,
             etiqueta: `${p.code} — ${p.name} (${formatMoney(Number(p.price), p.currency)})`,
             descripcion: p.name,
-            unidad: p.unit,
+            unidad: p.unit?.name ?? 'UNIDAD',
             precio: p.price.toFixed(2),
             impuesto: p.taxRate.toFixed(2),
             moneda: p.currency,
@@ -135,6 +143,7 @@ export default async function EditarCotizacionPage({
           impuestoPorDefecto={empresa?.defaultTaxRate.toFixed(0) ?? '13'}
           condicionesPorDefecto={empresa?.defaultTermsAndConditions ?? ''}
           validezPorDefecto={toInputDate(new Date(ahoraMs() + 15 * 24 * 60 * 60 * 1000))}
+          unidadesSugeridas={unidadesSugeridas}
         />
       </div>
     </div>

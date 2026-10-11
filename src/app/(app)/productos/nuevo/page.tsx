@@ -13,6 +13,12 @@ export default async function NuevoProductoPage() {
     select: { id: true, name: true },
   });
 
+  const unidades = await prisma.unitOfMeasure.findMany({
+    where: { isActive: true },
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true },
+  });
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
@@ -29,7 +35,7 @@ export default async function NuevoProductoPage() {
       </div>
 
       <div className="rounded-lg border border-minerva-border bg-minerva-white p-6 shadow-sm">
-        <ProductForm categories={categorias} />
+        <ProductForm categories={categorias} units={unidades} />
       </div>
     </div>
   );

@@ -20,12 +20,6 @@ datasource db {
 // RF-01 Gestión de Usuarios y Autenticación (RF-001 a RF-012)
 // ---------------------------------------------------------------------------
 
-enum Role {
-  ADMIN
-  COMERCIAL
-  CONSULTA
-}
-
 enum IdentificationType {
   CEDULA_FISICA
   CEDULA_JURIDICA
@@ -42,7 +36,7 @@ model User {
   firstName    String    @map("first_name") @db.VarChar(100)
   lastName     String    @map("last_name") @db.VarChar(100)
   phone        String?   @db.VarChar(30)
-  role         Role      @default(CONSULTA)
+  roleId       String    @map("role_id")
   isActive     Boolean   @default(true) @map("is_active")
   lastLoginAt  DateTime? @map("last_login_at")
   createdAt    DateTime  @default(now()) @map("created_at")
@@ -60,8 +54,43 @@ model User {
   createdQuotations   Quotation[]        @relation("QuotationCreatedBy")
   auditLogs           AuditLog[]
 
-  @@index([role, isActive])
+  role Role @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@index([roleId, isActive])
   @@map("users")
+}
+
+// RF-009/RF-010: los roles se administran desde la aplicación. Las casillas
+// de permiso son filas de `role_permissions`; `isAdmin` marca quién puede
+// administrar usuarios y roles, y se cuida que nunca quede el sistema sin
+// al menos un rol administrador activo con un usuario activo.
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.VarChar(255)
+  isSystem    Boolean  @default(false) @map("is_system")
+  isAdmin     Boolean  @default(false) @map("is_admin")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  users       User[]
+  permissions RolePermission[]
+
+  @@index([isSystem, isActive])
+  @@map("roles")
+}
+
+model RolePermission {
+  id         String @id @default(cuid())
+  roleId     String @map("role_id")
+  permission String @db.VarChar(60)
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permission])
+  @@index([permission])
+  @@map("role_permissions")
 }
 
 model Session {
@@ -195,6 +224,22 @@ model ProductCategory {
   @@map("product_categories")
 }
 
+// RF-042: unidades de medida configurables. El producto guarda una referencia
+// (unit_id); la cotización, al momento de emitirse, copia el nombre como
+// snapshot en quotation_item.unit para no alterar lo ya emitido (RF-092).
+model UnitOfMeasure {
+  id        String   @id @default(cuid())
+  name      String   @unique @db.VarChar(30)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@index([isActive, name])
+  @@map("units_of_measure")
+}
+
 model Product {
   id          String  @id @default(cuid())
   // RF-038
@@ -208,8 +253,8 @@ model Product {
   // RF-041: porcentaje de impuesto
   taxRate     Decimal @default(0) @map("tax_rate") @db.Decimal(5, 2)
   currency    Currency @default(CRC)
-  // RF-042
-  unit        String  @default("UNIDAD") @db.VarChar(30)
+  // RF-042: unidad de medida (catálogo configurable)
+  unitId      String? @map("unit_id")
   categoryId  String? @map("category_id")
   // RF-045
   isActive    Boolean @default(true) @map("is_active")
@@ -217,6 +262,7 @@ model Product {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   category       ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  unit           UnitOfMeasure?   @relation(fields: [unitId], references: [id], onDelete: SetNull)
   quotationItems QuotationItem[]
 
   // RF-046 / RF-125

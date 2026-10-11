@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { QUOTATION_STATUS_LABELS, PRODUCT_TYPE_LABELS } from '@/lib/labels';
 import { formatDate, formatMoney } from '@/lib/utils';
@@ -16,6 +15,7 @@ export default async function ProductoPage({ params }: PageProps<'/productos/[id
     where: { id },
     include: {
       category: { select: { id: true, name: true } },
+      unit: { select: { name: true } },
       quotationItems: {
         orderBy: { quotation: { createdAt: 'desc' } },
         take: 10,
@@ -34,7 +34,7 @@ export default async function ProductoPage({ params }: PageProps<'/productos/[id
 
   if (!producto) notFound();
 
-  const puedeEditar = can(actor.role, 'products:write');
+  const puedeEditar = userHas(actor, 'products:write');
   const precio = Number(producto.price);
   const impuesto = Number(producto.taxRate);
 
@@ -105,7 +105,7 @@ export default async function ProductoPage({ params }: PageProps<'/productos/[id
               <dt className="text-xs font-medium uppercase tracking-wide text-minerva-muted">
                 Unidad de medida
               </dt>
-              <dd className="mt-0.5 text-sm text-minerva-black">{producto.unit}</dd>
+              <dd className="mt-0.5 text-sm text-minerva-black">{producto.unit?.name ?? '—'}</dd>
             </div>
             <div>
               <dt className="text-xs font-medium uppercase tracking-wide text-minerva-muted">

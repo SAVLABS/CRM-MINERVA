@@ -11,7 +11,7 @@ que administra la plataforma.
 | [1. Acceso, usuarios y roles](01-acceso-usuarios-roles.md) | Acceso | Entrar, recuperar contraseña, perfiles, roles y permisos |
 | [2. Clientes](02-clientes.md) | RF-02 | Ficha, identificación, contactos y datos del cliente |
 | [3. Contactos](03-contactos.md) | RF-03 | Personas de la cuenta y contacto principal |
-| [4. Productos y servicios](04-productos.md) | RF-04 | Catálogo, precios, impuestos y categorías |
+| [4. Productos y servicios](04-productos.md) | RF-04 | Catálogo, precios, impuestos, categorías y unidades de medida |
 | [5. Oportunidades comerciales](05-oportunidades.md) | RF-05 | Datos, monto, responsable, cierre y pérdida |
 | [6. Pipeline de ventas](06-pipeline.md) | RF-06 | Tablero por etapas y avance de la oportunidad |
 | [7. Actividades y seguimiento](07-actividades.md) | RF-07 | Tareas, llamadas, reuniones y su seguimiento |

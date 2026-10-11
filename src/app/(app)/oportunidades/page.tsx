@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { fechaInput, paramFecha, rangoFechas, rangoValido } from '@/lib/filtros';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { OpportunityStatus } from '@/generated/prisma/enums';
 import { OPPORTUNITY_STATUS_LABELS } from '@/lib/labels';
@@ -95,7 +94,7 @@ export default async function OportunidadesPage({ searchParams }: PageProps<'/op
     ]);
 
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const puedeEditar = can(actor.role, 'opportunities:write');
+  const puedeEditar = userHas(actor, 'opportunities:write');
 
   const qs = (extra: Record<string, string>) => {
     const base: Record<string, string> = {

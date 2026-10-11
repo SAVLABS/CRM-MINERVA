@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can, ROLE_LABELS } from '@/lib/permissions';
-import { Role } from '@/generated/prisma/enums';
 import { formatDateTime } from '@/lib/utils';
 import { Button } from '@/components/form';
 
@@ -19,8 +17,7 @@ export default async function UsuariosPage({ searchParams }: PageProps<'/usuario
   const params = await searchParams;
 
   const q = one(params.q)?.trim() ?? '';
-  const rawRole = one(params.role);
-  const role = rawRole && rawRole in Role ? (rawRole as Role) : undefined;
+  const roleId = one(params.role)?.trim() ?? '';
   const rawEstado = one(params.estado);
   const estado: 'todos' | 'activos' | 'inactivos' =
     rawEstado === 'inactivos' || rawEstado === 'activos' ? rawEstado : 'todos';
@@ -36,28 +33,30 @@ export default async function UsuariosPage({ searchParams }: PageProps<'/usuario
           ],
         }
       : {}),
-    ...(role ? { role } : {}),
+    ...(roleId ? { roleId } : {}),
     ...(estado === 'activos' ? { isActive: true } : {}),
     ...(estado === 'inactivos' ? { isActive: false } : {}),
   };
 
-  const [total, usuarios, activos, totalAdmins] = await prisma.$transaction([
+  const [total, usuarios, activos, totalAdmins, roles] = await prisma.$transaction([
     prisma.user.count({ where }),
     prisma.user.findMany({
       where,
-      orderBy: [{ isActive: 'desc' }, { lastName: 'asc' }, { firstName: 'asc' }],
+      include: { role: true },
+      orderBy: [{ isActive: 'desc' }, { role: { name: 'asc' } }, { lastName: 'asc' }, { firstName: 'asc' }],
       take: PAGE_SIZE,
       skip: (page - 1) * PAGE_SIZE,
     }),
     prisma.user.count({ where: { isActive: true } }),
-    prisma.user.count({ where: { role: Role.ADMIN, isActive: true } }),
+    prisma.user.count({ where: { isActive: true, role: { isAdmin: true } } }),
+    prisma.role.findMany({ orderBy: { name: 'asc' } }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const pageLink = (n: number) => {
     const sp = new URLSearchParams();
     if (q) sp.set('q', q);
-    if (role) sp.set('role', role);
+    if (roleId) sp.set('role', roleId);
     if (estado !== 'todos') sp.set('estado', estado);
     if (n > 1) sp.set('page', String(n));
     const qs = sp.toString();
@@ -74,11 +73,9 @@ export default async function UsuariosPage({ searchParams }: PageProps<'/usuario
             {totalAdmins === 1 ? 'administrador' : 'administradores'}
           </p>
         </div>
-        {can(actor.role, 'users:manage') && (
-          <Link href="/usuarios/nuevo">
-            <Button variant="primary">Nuevo usuario</Button>
-          </Link>
-        )}
+        <Link href="/usuarios/nuevo">
+          <Button variant="primary">Nuevo usuario</Button>
+        </Link>
       </div>
 
       <form method="get" action="/usuarios" className="flex flex-wrap items-end gap-3">
@@ -94,11 +91,11 @@ export default async function UsuariosPage({ searchParams }: PageProps<'/usuario
         </label>
         <label className="w-44">
           <span className="mb-1.5 block text-sm font-medium text-neutral-800">Rol</span>
-          <select name="role" defaultValue={role ?? ''} className={FILTER_CONTROL}>
+          <select name="role" defaultValue={roleId} className={FILTER_CONTROL}>
             <option value="">Todos</option>
-            {Object.values(Role).map((r) => (
-              <option key={r} value={r}>
-                {ROLE_LABELS[r]}
+            {roles.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
               </option>
             ))}
           </select>
@@ -117,7 +114,7 @@ export default async function UsuariosPage({ searchParams }: PageProps<'/usuario
         >
           Filtrar
         </button>
-        {(q || role || estado !== 'todos') && (
+        {(q || roleId || estado !== 'todos') && (
           <Link
             href="/usuarios"
             className="px-1 py-2 text-sm font-medium text-minerva-red hover:text-minerva-red-dark"
@@ -161,7 +158,7 @@ export default async function UsuariosPage({ searchParams }: PageProps<'/usuario
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-neutral-700">{ROLE_LABELS[u.role]}</td>
+                <td className="px-4 py-3 text-neutral-700">{u.role.name}</td>
                 <td className="hidden px-4 py-3 text-neutral-700 sm:table-cell">{u.phone ?? '—'}</td>
                 <td className="hidden px-4 py-3 text-neutral-700 md:table-cell">
                   {u.lastLoginAt ? formatDateTime(u.lastLoginAt) : 'Nunca'}

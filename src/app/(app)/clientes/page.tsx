@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { CLIENT_TYPE_LABELS } from '@/lib/labels';
 import { ClientType } from '@/generated/prisma/enums';
@@ -98,7 +97,7 @@ export default async function ClientesPage({ searchParams }: PageProps<'/cliente
             {empresas === 1 ? 'empresa' : 'empresas'}
           </p>
         </div>
-        {can(actor.role, 'clients:write') && (
+        {userHas(actor, 'clients:write') && (
           <Link href="/clientes/nuevo">
             <Button variant="primary">Nuevo cliente</Button>
           </Link>

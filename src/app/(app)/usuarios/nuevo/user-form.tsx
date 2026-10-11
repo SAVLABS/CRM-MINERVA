@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 import { createUserAction, type ActionState } from '../actions.server';
 import { Button, Field, FormMessage, SelectField, SubmitButton } from '@/components/form';
-import { ROLE_LABELS } from '@/lib/permissions';
-import { Role } from '@/generated/prisma/enums';
 
-export function CreateUserForm() {
+export type RoleOption = { id: string; name: string };
+
+export function CreateUserForm({ roles }: { roles: RoleOption[] }) {
   const [state, action] = useActionState<ActionState, FormData>(createUserAction, {});
 
   return (
@@ -28,8 +28,8 @@ export function CreateUserForm() {
           <Field label="Teléfono" name="phone" type="tel" required={false} placeholder="+506 8000 0000" />
           <SelectField
             label="Rol"
-            name="role"
-            options={Object.values(Role).map((r) => ({ value: r, label: ROLE_LABELS[r] }))}
+            name="roleId"
+            options={roles.map((r) => ({ value: r.id, label: r.name }))}
           />
         </div>
       </div>

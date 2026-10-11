@@ -1,12 +1,7 @@
-import { Role } from '@/generated/prisma/enums';
-
 /**
- * RF-010: permisos por rol. Tres roles fijos definidos en la propuesta.
- *
- * La matriz se declara acá y no en la base de datos porque los roles son fijos
- * para la Fase 1. Si una fase futura necesita roles configurables, se migra a
- * una tabla `permissions` sin tocar los puntos de uso, que siempre llaman a
- * `can()`.
+ * RF-010: catálogo de permisos. Cada rol guarda en la base la lista de
+ * permisos que le tocan (tabla `role_permissions`); este archivo solo define
+ * los nombres posibles y cómo se muestran, no qué rol tiene cuál permiso.
  */
 export type Permission =
   // RF-006/007: escribir registros operativos
@@ -31,53 +26,6 @@ export type Permission =
   | 'reports:read'
   | 'audit:read';
 
-const READ_ONLY: Permission[] = [
-  'clients:read',
-  'contacts:read',
-  'products:read',
-  'opportunities:read',
-  'activities:read',
-  'quotations:read',
-  'reports:read',
-];
-
-const OPERATOR: Permission[] = [
-  ...READ_ONLY,
-  'clients:write',
-  'contacts:write',
-  'products:read',
-  'opportunities:write',
-  'activities:write',
-  'quotations:write',
-];
-
-const ADMIN: Permission[] = [
-  ...OPERATOR,
-  'products:write',
-  'stages:manage',
-  'activityTypes:manage',
-  'settings:manage',
-  'users:manage',
-  'audit:read',
-];
-
-export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
-  [Role.CONSULTA]: READ_ONLY,
-  [Role.COMERCIAL]: OPERATOR,
-  [Role.ADMIN]: ADMIN,
-};
-
-export const ROLE_LABELS: Record<Role, string> = {
-  [Role.ADMIN]: 'Administrador',
-  [Role.COMERCIAL]: 'Comercial',
-  [Role.CONSULTA]: 'Consulta',
-};
-
-/**
- * RF-010: los permisos no se editan desde la aplicación. Se muestran para que
- * el administrador sepa qué tiene cada rol. Editarlos sería ampliar el alcance
- * (los roles son un enum fijo en el schema) y por eso queda como fase aparte.
- */
 export const PERMISSION_GROUPS: {
   label: string;
   permissions: { key: Permission; label: string }[];
@@ -147,9 +95,9 @@ export const ALL_PERMISSIONS: Permission[] = PERMISSION_GROUPS.flatMap((g) =>
 );
 
 /**
- * Si se agrega un permiso al union `Permission` y se olvida listarlo en
- * PERMISSION_GROUPS, esto deja de compilar. La matriz del admin submuestra
- * permisos de otra forma, y eso es peor que un error de build.
+ * Si un permiso del union se olvida en PERMISSION_GROUPS esto no compila: la
+ * matriz de permisos se edita desde la aplicación y nadie se quiere enterar
+ * en producción de que un permiso quedó fuera del formulario.
  */
 type ListedPermission = (typeof PERMISSION_GROUPS)[number]['permissions'][number]['key'];
 type MissingFromGroups = Exclude<Permission, ListedPermission>;
@@ -157,14 +105,79 @@ export type PermissionsMatrixIsComplete = MissingFromGroups extends never ? true
 const _matrixIsComplete: PermissionsMatrixIsComplete = true;
 void _matrixIsComplete;
 
-export function can(role: Role, permission: Permission): boolean {
-  return ROLE_PERMISSIONS[role].includes(permission);
+/**
+ * Roles de fábrica que se cargan con el seed (RF-009). La primera vez que
+ * arranca una base nueva, el seed los crea; si ya existían con otro nombre o
+ * permisos, el seed no los toca para no pisar lo que el administrador haya
+ * configurado.
+ */
+export const DEFAULT_SYSTEM_ROLES: {
+  id: string;
+  name: string;
+  description: string;
+  isAdmin: boolean;
+  permissions: Permission[];
+}[] = [
+  {
+    id: 'r_def_admin',
+    name: 'Administrador',
+    description: 'Acceso total al sistema y administración de usuarios y roles.',
+    isAdmin: true,
+    permissions: ALL_PERMISSIONS,
+  },
+  {
+    id: 'r_def_comercial',
+    name: 'Comercial',
+    description:
+      'Operación comercial: clientes, contactos, oportunidades, actividades y cotizaciones.',
+    isAdmin: false,
+    permissions: [
+      'clients:read',
+      'clients:write',
+      'contacts:read',
+      'contacts:write',
+      'products:read',
+      'opportunities:read',
+      'opportunities:write',
+      'activities:read',
+      'activities:write',
+      'quotations:read',
+      'quotations:write',
+      'reports:read',
+    ],
+  },
+  {
+    id: 'r_def_consulta',
+    name: 'Consulta',
+    description: 'Solo lectura de la información y reportes.',
+    isAdmin: false,
+    permissions: [
+      'clients:read',
+      'contacts:read',
+      'products:read',
+      'opportunities:read',
+      'activities:read',
+      'quotations:read',
+      'reports:read',
+    ],
+  },
+];
+
+/** Permiso puntual contra la lista de permisos que trae el rol de la sesión. */
+export function can(permissions: readonly string[] | ReadonlySet<string>, permission: Permission) {
+  return (permissions as readonly string[]).includes(permission);
 }
 
-export function canAll(role: Role, permissions: Permission[]): boolean {
-  return permissions.every((p) => can(role, p));
+export function canAll(
+  permissions: readonly string[] | ReadonlySet<string>,
+  requires: Permission[],
+) {
+  return requires.every((p) => can(permissions, p));
 }
 
-export function canAny(role: Role, permissions: Permission[]): boolean {
-  return permissions.some((p) => can(role, p));
+export function canAny(
+  permissions: readonly string[] | ReadonlySet<string>,
+  options: Permission[],
+) {
+  return options.some((p) => can(permissions, p));
 }

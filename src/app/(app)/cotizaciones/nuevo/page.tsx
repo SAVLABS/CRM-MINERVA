@@ -49,7 +49,7 @@ export default async function NuevaCotizacionPage({
         price: true,
         taxRate: true,
         currency: true,
-        unit: true,
+        unit: { select: { name: true } },
       },
     }),
     // RF-089 / RF-090 / RF-091: los valores por defecto salen de la configuración
@@ -73,6 +73,14 @@ export default async function NuevaCotizacionPage({
   ]);
 
   const clienteInicial = oportunidad?.clientId ?? contacto?.clientId ?? clienteParam;
+
+  const unidadesSugeridas = (
+    await prisma.unitOfMeasure.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+      select: { name: true },
+    })
+  ).map((u) => u.name);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -98,7 +106,7 @@ export default async function NuevaCotizacionPage({
             id: p.id,
             etiqueta: `${p.code} — ${p.name} (${formatMoney(Number(p.price), p.currency)})`,
             descripcion: p.name,
-            unidad: p.unit,
+            unidad: p.unit?.name ?? 'UNIDAD',
             precio: p.price.toFixed(2),
             impuesto: p.taxRate.toFixed(2),
             moneda: p.currency,
@@ -118,6 +126,7 @@ export default async function NuevaCotizacionPage({
           impuestoPorDefecto={empresa?.defaultTaxRate.toFixed(0) ?? '13'}
           condicionesPorDefecto={empresa?.defaultTermsAndConditions ?? ''}
           validezPorDefecto={toInputDate(new Date(ahoraMs() + 15 * 24 * 60 * 60 * 1000))}
+          unidadesSugeridas={unidadesSugeridas}
           asociacionInicial={{
             clientId: clienteInicial || undefined,
             contactId: contacto?.id,

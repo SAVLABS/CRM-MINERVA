@@ -1,46 +1,52 @@
-import { requireUser } from '@/lib/auth/guards';
-import { can, ROLE_LABELS } from '@/lib/permissions';
+import { requireUser, userHas } from '@/lib/auth/guards';
 import { AppShell, type NavItem } from '@/components/app-shell';
 
 export default async function AppLayout({ children }: LayoutProps<'/'>) {
   const user = await requireUser();
 
   const items: NavItem[] = [{ href: '/dashboard', label: 'Panel' }];
-  if (can(user.role, 'clients:read')) {
+  if (userHas(user, 'clients:read')) {
     items.push({ href: '/clientes', label: 'Clientes' });
   }
-  if (can(user.role, 'contacts:read')) {
+  if (userHas(user, 'contacts:read')) {
     items.push({ href: '/contactos', label: 'Contactos' });
   }
-  if (can(user.role, 'products:read')) {
+  if (userHas(user, 'products:read')) {
     items.push({ href: '/productos', label: 'Productos' });
   }
-  if (can(user.role, 'opportunities:read')) {
+  if (userHas(user, 'products:write')) {
+    items.push({ href: '/configuracion/unidades', label: 'Unidades de medida' });
+  }
+  if (userHas(user, 'opportunities:read')) {
     items.push(
       { href: '/oportunidades', label: 'Oportunidades' },
       { href: '/pipeline', label: 'Pipeline' },
     );
   }
-  if (can(user.role, 'stages:manage')) {
+  if (userHas(user, 'stages:manage')) {
     items.push({ href: '/configuracion/etapas', label: 'Etapas' });
   }
-  if (can(user.role, 'activities:read')) {
+  if (userHas(user, 'activities:read')) {
     items.push({ href: '/actividades', label: 'Actividades' });
   }
-  if (can(user.role, 'quotations:read')) {
+  if (userHas(user, 'quotations:read')) {
     items.push({ href: '/cotizaciones', label: 'Cotizaciones' });
   }
-  if (can(user.role, 'reports:read')) {
+  if (userHas(user, 'reports:read')) {
     items.push({ href: '/reportes', label: 'Reportes' });
   }
-  if (can(user.role, 'activityTypes:manage')) {
+  if (userHas(user, 'activityTypes:manage')) {
     items.push({ href: '/configuracion/tipos-actividad', label: 'Tipos de actividad' });
   }
-  if (can(user.role, 'settings:manage')) {
+  if (userHas(user, 'settings:manage')) {
     items.push({ href: '/configuracion/empresa', label: 'Empresa' });
   }
-  if (can(user.role, 'users:manage')) {
-    items.push({ href: '/usuarios', label: 'Usuarios' }, { href: '/usuarios/roles', label: 'Roles' });
+  if (userHas(user, 'users:manage')) {
+    items.push({ href: '/usuarios', label: 'Usuarios' });
+  }
+  // RF-009/RF-010: la administración de roles es solo del rol Administrador.
+  if (user.role.isAdmin) {
+    items.push({ href: '/usuarios/roles', label: 'Roles y permisos' });
   }
   items.push({ href: '/perfil', label: 'Mi perfil' });
 
@@ -48,7 +54,7 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
     <AppShell
       items={items}
       userName={`${user.firstName} ${user.lastName}`}
-      userRole={ROLE_LABELS[user.role]}
+      userRole={user.role.name}
     >
       {children}
     </AppShell>

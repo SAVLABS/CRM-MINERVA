@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { Currency, OpportunityStatus } from '@/generated/prisma/enums';
 import { CURRENCY_LABELS, OPPORTUNITY_STATUS_LABELS } from '@/lib/labels';
@@ -27,8 +26,8 @@ type Resumen = { total: number; cantidad: number };
  */
 export default async function PipelinePage() {
   const actor = await requirePermissionOrRedirect('opportunities:read');
-  const puedeEditar = can(actor.role, 'opportunities:write');
-  const puedeEtapas = can(actor.role, 'stages:manage');
+  const puedeEditar = userHas(actor, 'opportunities:write');
+  const puedeEtapas = userHas(actor, 'stages:manage');
 
   const etapas = await prisma.stage.findMany({
     where: { isActive: true },

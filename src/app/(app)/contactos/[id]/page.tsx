@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import {
   ACTIVITY_STATUS_LABELS,
@@ -35,9 +34,9 @@ export default async function ContactoPage({ params }: PageProps<'/contactos/[id
 
   if (!contacto) notFound();
 
-  const puedeEditar = can(actor.role, 'contacts:write');
-  const puedeRegistrarActividad = can(actor.role, 'activities:write');
-  const puedeCotizar = can(actor.role, 'quotations:write');
+  const puedeEditar = userHas(actor, 'contacts:write');
+  const puedeRegistrarActividad = userHas(actor, 'activities:write');
+  const puedeCotizar = userHas(actor, 'quotations:write');
 
   return (
     <div className="space-y-6">

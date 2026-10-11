@@ -2,7 +2,6 @@ import { createHash, randomBytes } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
 import { prisma } from '@/lib/db';
-import type { Role } from '@/generated/prisma/enums';
 
 /**
  * Sesiones opacas en BD (no JWT) para permitir revocación inmediata (RF-008).
@@ -59,8 +58,14 @@ export type SessionUser = {
   email: string;
   firstName: string;
   lastName: string;
-  role: Role;
   isActive: boolean;
+  role: {
+    id: string;
+    name: string;
+    isSystem: boolean;
+    isAdmin: boolean;
+    permissions: string[];
+  };
 };
 
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
@@ -70,7 +75,15 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
 
   const session = await prisma.session.findUnique({
     where: { tokenHash: hashToken(token) },
-    include: { user: true },
+    include: {
+      user: {
+        include: {
+          role: {
+            include: { permissions: { select: { permission: true } } },
+          },
+        },
+      },
+    },
   });
 
   if (!session) return null;
@@ -87,7 +100,13 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     email: session.user.email,
     firstName: session.user.firstName,
     lastName: session.user.lastName,
-    role: session.user.role,
     isActive: session.user.isActive,
+    role: {
+      id: session.user.role.id,
+      name: session.user.role.name,
+      isSystem: session.user.role.isSystem,
+      isAdmin: session.user.role.isAdmin,
+      permissions: session.user.role.permissions.map((p) => p.permission),
+    },
   };
 });

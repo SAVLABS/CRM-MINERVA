@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { ROLE_LABELS } from '@/lib/permissions';
 import { formatDateTime } from '@/lib/utils';
 import { UserDetail } from './user-detail';
 
@@ -13,6 +12,7 @@ export default async function UsuarioPage({ params }: PageProps<'/usuarios/[id]'
   const user = await prisma.user.findUnique({
     where: { id },
     include: {
+      role: { select: { id: true, name: true } },
       _count: {
         select: { ownedOpportunities: true, assignedActivities: true, createdClients: true },
       },
@@ -22,6 +22,12 @@ export default async function UsuarioPage({ params }: PageProps<'/usuarios/[id]'
   if (!user) notFound();
 
   const isSelf = user.id === actor.id;
+
+  const roles = await prisma.role.findMany({
+    where: { isActive: true },
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true },
+  });
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -51,7 +57,7 @@ export default async function UsuarioPage({ params }: PageProps<'/usuarios/[id]'
           </div>
           <div className="flex gap-1.5">
             <dt className="font-medium text-neutral-700">Rol:</dt>
-            <dd>{ROLE_LABELS[user.role]}</dd>
+            <dd>{user.role.name}</dd>
           </div>
           <div className="flex gap-1.5">
             <dt className="font-medium text-neutral-700">Último acceso:</dt>
@@ -71,9 +77,10 @@ export default async function UsuarioPage({ params }: PageProps<'/usuarios/[id]'
           firstName: user.firstName,
           lastName: user.lastName,
           phone: user.phone,
-          role: user.role,
+          roleId: user.role.id,
           isActive: user.isActive,
         }}
+        roles={roles}
         isSelf={isSelf}
       />
 

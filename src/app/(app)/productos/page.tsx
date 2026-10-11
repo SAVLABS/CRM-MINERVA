@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { fechaInput, paramFecha, rangoFechas, rangoValido } from '@/lib/filtros';
-import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requirePermissionOrRedirect, userHas } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { formatMoney } from '@/lib/utils';
 import { PRODUCT_TYPE_LABELS } from '@/lib/labels';
@@ -70,7 +69,7 @@ export default async function ProductosPage({ searchParams }: PageProps<'/produc
       orderBy: [{ isActive: 'desc' }, { name: 'asc' }],
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      include: { category: { select: { name: true } } },
+      include: { category: { select: { name: true } }, unit: { select: { name: true } } },
     }),
     prisma.productCategory.findMany({
       where: { isActive: true },
@@ -80,7 +79,7 @@ export default async function ProductosPage({ searchParams }: PageProps<'/produc
   ]);
 
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const puedeEditar = can(actor.role, 'products:write');
+  const puedeEditar = userHas(actor, 'products:write');
 
   const qs = (extra: Record<string, string>) => {
     const base: Record<string, string> = {
@@ -198,7 +197,8 @@ export default async function ProductosPage({ searchParams }: PageProps<'/produc
                       {p.name}
                     </Link>
                     <span className="block text-xs text-minerva-muted">
-                      {PRODUCT_TYPE_LABELS[p.isService ? 'servicio' : 'producto']} · {p.unit}
+                      {PRODUCT_TYPE_LABELS[p.isService ? 'servicio' : 'producto']} ·{' '}
+                      {p.unit?.name ?? 'Sin unidad'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-neutral-700">{p.category?.name ?? '—'}</td>

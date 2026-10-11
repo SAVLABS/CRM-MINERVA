@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { requireUser } from '@/lib/auth/guards';
-import { can } from '@/lib/permissions';
+import { requireUser, userHas } from '@/lib/auth/guards';
 import { prisma } from '@/lib/db';
 import { Currency, OpportunityStatus, QuotationStatus } from '@/generated/prisma/enums';
 import type { Prisma } from '@/generated/prisma/client';
@@ -44,8 +43,8 @@ export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
   const ahora = new Date(ahoraMs());
   const periodo = resolverPeriodo(params, ahora);
   const rango = filtroFecha(periodo);
-  const puedeVerCotizaciones = can(user.role, 'quotations:read');
-  const puedeVerPipeline = can(user.role, 'opportunities:read');
+  const puedeVerCotizaciones = userHas(user, 'quotations:read');
+  const puedeVerPipeline = userHas(user, 'opportunities:read');
 
   // Dos transacciones y no una: las consultas de cotizaciones solo se lanzan si
   // el rol puede verlas, y mezclar Promises condicionales en el arreglo de

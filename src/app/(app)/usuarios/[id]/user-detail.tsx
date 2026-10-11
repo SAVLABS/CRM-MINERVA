@@ -15,8 +15,8 @@ import {
   SelectField,
   SubmitButton,
 } from '@/components/form';
-import { ROLE_LABELS } from '@/lib/permissions';
-import { Role } from '@/generated/prisma/enums';
+
+export type RoleOption = { id: string; name: string };
 
 type User = {
   id: string;
@@ -24,11 +24,19 @@ type User = {
   firstName: string;
   lastName: string;
   phone: string | null;
-  role: Role;
+  roleId: string;
   isActive: boolean;
 };
 
-function EditDataForm({ user, isSelf }: { user: User; isSelf: boolean }) {
+function EditDataForm({
+  user,
+  roles,
+  isSelf,
+}: {
+  user: User;
+  roles: RoleOption[];
+  isSelf: boolean;
+}) {
   const [state, action] = useActionState<ActionState, FormData>(updateUserAction, {});
 
   return (
@@ -49,11 +57,11 @@ function EditDataForm({ user, isSelf }: { user: User; isSelf: boolean }) {
         />
         <SelectField
           label="Rol"
-          name="role"
-          defaultValue={user.role}
+          name="roleId"
+          defaultValue={user.roleId}
           disabled={isSelf}
           hint={isSelf ? 'No podés cambiar tu propio rol.' : undefined}
-          options={Object.values(Role).map((r) => ({ value: r, label: ROLE_LABELS[r] }))}
+          options={roles.map((r) => ({ value: r.id, label: r.name }))}
         />
       </div>
 
@@ -146,18 +154,17 @@ function Section({
 
 export function UserDetail({
   user,
+  roles,
   isSelf,
 }: {
   user: User;
+  roles: RoleOption[];
   isSelf: boolean;
 }) {
   return (
     <div className="space-y-6">
-      <Section
-        title="Datos del usuario"
-        description="Nombre, correo, teléfono y rol."
-      >
-        <EditDataForm user={user} isSelf={isSelf} />
+      <Section title="Datos del usuario" description="Nombre, correo, teléfono y rol.">
+        <EditDataForm user={user} roles={roles} isSelf={isSelf} />
       </Section>
 
       {!isSelf && (
