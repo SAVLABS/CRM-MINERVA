@@ -1,9 +1,19 @@
 import Link from 'next/link';
+import {
+  CircleDollarSign,
+  FileText,
+  Target,
+  TrendingUp,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { requirePermissionOrRedirect } from '@/lib/auth/guards';
 import { Button } from '@/components/form';
 import { formatMoney, toInputDate } from '@/lib/utils';
 import { Currency } from '@/generated/prisma/enums';
+import { BarrasEtapas, Dona, PALETA, SERIE_COLORES } from '@/components/charts';
+import { Kpi } from '@/components/kpi';
 import {
   describirFiltros,
   esTipoReporte,
@@ -13,10 +23,19 @@ import {
   REPORTE_LABELS,
   TIPOS_REPORTE,
   type FiltrosReporte,
+  type TipoReporte,
 } from '@/lib/reportes';
 
 const CONTROL =
   'rounded-md border border-neutral-300 bg-minerva-white px-3 py-2 text-sm text-minerva-black outline-none transition-colors focus:border-minerva-red focus:ring-2 focus:ring-minerva-red/20';
+
+/** Ícono de la entidad del reporte, para las tarjetas de indicadores. */
+const ICONO_REPORTE: Record<TipoReporte, LucideIcon> = {
+  ventas: TrendingUp,
+  oportunidades: Target,
+  cotizaciones: FileText,
+  clientes: Users,
+};
 
 /** `searchParams` puede repetir clave; nos interesa el primer valor. */
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
@@ -98,6 +117,16 @@ export default async function ReportesPage({ searchParams }: PageProps<'/reporte
   const hayFiltros = Boolean(
     filtros.desde || filtros.hasta || filtros.usuarioId || filtros.clienteId || filtros.estado,
   );
+
+  // Los totales del reporte se muestran como tarjetas de indicadores: los montos
+  // llevan su propio ícono y color, los conteos toman el de la entidad.
+  const kpis = reporte.totales.map((t, i) => ({
+    etiqueta: t.etiqueta,
+    valor: t.moneda ? formatMoney(Number(t.valor), t.moneda) : t.valor,
+    color: t.moneda ? PALETA.esmeralda : SERIE_COLORES[i % SERIE_COLORES.length]!,
+    icono: t.moneda ? CircleDollarSign : ICONO_REPORTE[tipo],
+    valorClassName: t.moneda ? 'text-lg sm:text-xl' : undefined,
+  }));
 
   return (
     <div className="space-y-6">
@@ -217,6 +246,44 @@ export default async function ReportesPage({ searchParams }: PageProps<'/reporte
           <p className="text-sm text-minerva-muted">{descripcion}</p>
         </div>
 
+        {kpis.length > 0 && (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {kpis.map((k) => (
+              <Kpi
+                key={k.etiqueta}
+                icon={k.icono}
+                etiqueta={k.etiqueta}
+                valor={k.valor}
+                color={k.color}
+                valorClassName={k.valorClassName}
+              />
+            ))}
+          </div>
+        )}
+
+        {reporte.graficos.length > 0 && (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {reporte.graficos.map((g, i) =>
+              g.tipo === 'dona' ? (
+                <Dona
+                  key={`grafico-${i}`}
+                  titulo={g.titulo}
+                  subtitulo={g.subtitulo}
+                  centroTexto={g.centro}
+                  segmentos={g.segmentos}
+                />
+              ) : (
+                <BarrasEtapas
+                  key={`grafico-${i}`}
+                  titulo={g.titulo}
+                  subtitulo={g.subtitulo}
+                  filas={g.filas.map((f) => ({ ...f, ancho: f.valor }))}
+                />
+              ),
+            )}
+          </div>
+        )}
+
         <div className="overflow-x-auto rounded-lg border border-minerva-border bg-minerva-white shadow-sm">
           {reporte.filas.length === 0 ? (
             <p className="px-6 py-12 text-center text-sm text-minerva-muted">
@@ -258,19 +325,6 @@ export default async function ReportesPage({ searchParams }: PageProps<'/reporte
             </table>
           )}
         </div>
-
-        {reporte.totales.length > 0 && (
-          <div className="grid gap-3 rounded-lg border border-minerva-border bg-neutral-50 p-4 sm:grid-cols-2 lg:grid-cols-4">
-            {reporte.totales.map((t) => (
-              <div key={t.etiqueta}>
-                <p className="text-xs uppercase tracking-wide text-minerva-muted">{t.etiqueta}</p>
-                <p className="mt-1 text-lg font-semibold tabular-nums text-minerva-black">
-                  {t.moneda ? formatMoney(Number(t.valor), t.moneda) : t.valor}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
 
         {reporte.notas.length > 0 && (
           <ul className="space-y-1 text-xs text-minerva-muted">

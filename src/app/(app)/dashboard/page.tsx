@@ -1,4 +1,15 @@
 import Link from 'next/link';
+import {
+  BadgeCheck,
+  CalendarClock,
+  CircleDollarSign,
+  FileText,
+  Layers,
+  Target,
+  Trophy,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import { requireUser, userHas } from '@/lib/auth/guards';
 import { prisma } from '@/lib/db';
 import { Currency, OpportunityStatus, QuotationStatus } from '@/generated/prisma/enums';
@@ -15,7 +26,8 @@ import {
   ventanaMensual,
   type Ventana,
 } from '@/lib/periodos';
-import { BarrasEtapas, BarrasVerticales } from '@/components/charts';
+import { AreaTendencia, BarrasEtapas, BarrasVerticales, Dona, PALETA } from '@/components/charts';
+import { Kpi } from '@/components/kpi';
 import { ahoraMs } from '@/lib/utils';
 
 /**
@@ -35,7 +47,14 @@ const VENTANA_VENTAS_MESES = 12;
 const VENTANA_COTIZACIONES_MESES = 6;
 const VENTANA_ACTIVIDADES_DIAS = 14;
 
-type Fila = { etiqueta: string; valor: number; href: string | undefined };
+type KpiFila = {
+  etiqueta: string;
+  valor: number | string;
+  href: string | undefined;
+  icono: LucideIcon;
+  color: string;
+  valorClassName?: string;
+};
 
 export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
   const user = await requireUser();
@@ -211,35 +230,106 @@ export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
     };
   });
 
-  // ----- Cuadros -----
-  const tarjetasAhora: Fila[] = [
-    { etiqueta: 'Clientes registrados', valor: clientes, href: '/clientes' },
+  // ----- Cuadros del "ahora mismo" (RF-104 a RF-109) -----
+  const kpisAhora: KpiFila[] = [
+    { etiqueta: 'Clientes registrados', valor: clientes, href: '/clientes', icono: Users, color: PALETA.azul },
     {
       etiqueta: 'Oportunidades abiertas',
       valor: oportunidadesAbiertas,
       href: '/oportunidades?estado=OPEN',
+      icono: Target,
+      color: PALETA.rojo,
     },
     {
       etiqueta: 'Oportunidades ganadas',
       valor: oportunidadesGanadas,
       href: '/oportunidades?estado=WON',
+      icono: Trophy,
+      color: PALETA.esmeralda,
     },
   ];
   if (puedeVerCotizaciones) {
-    tarjetasAhora.push(
-      { etiqueta: 'Cotizaciones generadas', valor: cotizaciones, href: '/cotizaciones' },
+    kpisAhora.push(
+      {
+        etiqueta: 'Cotizaciones generadas',
+        valor: cotizaciones,
+        href: '/cotizaciones',
+        icono: FileText,
+        color: PALETA.ambar,
+      },
       {
         etiqueta: 'Cotizaciones aceptadas',
         valor: cotizacionesAceptadas,
         href: '/cotizaciones?estado=ACCEPTED',
+        icono: BadgeCheck,
+        color: PALETA.violeta,
       },
     );
   }
-  tarjetasAhora.push({
+  kpisAhora.push({
     etiqueta: 'Actividades pendientes',
     valor: actividadesPendientes,
     href: '/actividades?estado=PENDING',
+    icono: CalendarClock,
+    color: PALETA.cian,
   });
+
+  // ----- Cuadros del período (RF-110) -----
+  const kpisPeriodo: KpiFila[] = [];
+  if (monedasPeriodo.length === 1) {
+    const moneda = monedasPeriodo[0]!;
+    kpisPeriodo.push({
+      etiqueta: 'Monto vendido',
+      valor: formatMoney(ventaPorMoneda.get(moneda)?.total ?? 0, moneda as 'CRC' | 'USD'),
+      href: '/reportes?tipo=ventas',
+      icono: CircleDollarSign,
+      color: PALETA.esmeralda,
+      valorClassName: 'text-lg sm:text-xl',
+    });
+  } else if (monedasPeriodo.length > 1) {
+    kpisPeriodo.push({
+      etiqueta: 'Monedas con ventas',
+      valor: monedasPeriodo.length,
+      href: '/reportes?tipo=ventas',
+      icono: CircleDollarSign,
+      color: PALETA.esmeralda,
+    });
+  }
+  kpisPeriodo.push({
+    etiqueta: 'Oportunidades ganadas',
+    valor: oportunidadesCerradasPeriodo,
+    href: '/oportunidades?estado=WON',
+    icono: Trophy,
+    color: PALETA.rojo,
+  });
+  if (puedeVerCotizaciones) {
+    kpisPeriodo.push({
+      etiqueta: 'Cotizaciones generadas',
+      valor: cotizacionesPeriodo,
+      href: '/cotizaciones',
+      icono: FileText,
+      color: PALETA.ambar,
+    });
+  }
+
+  // ----- Cuadros del tablero por etapa (RF-113) -----
+  const oportunidadesEnTablero = filasEtapas.reduce((a, e) => a + e.cantidad, 0);
+  const kpisEtapas: KpiFila[] = [
+    {
+      etiqueta: 'Oportunidades en el tablero',
+      valor: oportunidadesEnTablero,
+      href: '/pipeline',
+      icono: Target,
+      color: PALETA.indigo,
+    },
+    {
+      etiqueta: 'Etapas activas',
+      valor: etapas.length,
+      href: '/configuracion/etapas',
+      icono: Layers,
+      color: PALETA.cian,
+    },
+  ];
 
   const rangoActivo = Boolean(periodo.desde);
   const ventanaTitulo = (v: Ventana) =>
@@ -342,8 +432,15 @@ export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
           Ahora mismo
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {tarjetasAhora.map((t) => (
-            <Tarjeta key={t.etiqueta} {...t} />
+          {kpisAhora.map((k) => (
+            <Kpi
+              key={k.etiqueta}
+              icon={k.icono}
+              etiqueta={k.etiqueta}
+              valor={k.valor}
+              href={k.href}
+              color={k.color}
+            />
           ))}
         </div>
       </section>
@@ -353,71 +450,58 @@ export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
         <h2 className="text-sm font-semibold uppercase tracking-wide text-minerva-muted">
           Ventas del período ({periodo.etiqueta})
         </h2>
-        <div className="rounded-lg border border-minerva-border bg-minerva-white p-4 shadow-sm">
-            {monedasPeriodo.length === 0 ? (
-              <p className="py-6 text-center text-sm text-minerva-muted">
-                No hay oportunidades ganadas cerradas en este período.
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {kpisPeriodo.map((k) => (
+            <Kpi
+              key={k.etiqueta}
+              icon={k.icono}
+              etiqueta={k.etiqueta}
+              valor={k.valor}
+              href={k.href}
+              color={k.color}
+              valorClassName={k.valorClassName}
+            />
+          ))}
+        </div>
+
+        <div className="rounded-xl border border-minerva-border bg-minerva-white p-4 shadow-sm">
+          {monedasPeriodo.length > 1 ? (
+            <>
+              <p className="text-sm text-minerva-muted">
+                Monto vendido por moneda (no se suman entre sí)
               </p>
-            ) : (
-              <>
-                <p className="text-sm text-minerva-muted">Monto vendido</p>
-                {/*
-                  El monto grande solo aparece si hubo una sola moneda. Con varias
-                  no se suman: colones más dólares es un número sin significado y
-                  además escondería el desglose detrás de un total inventado.
-                */}
-                {monedasPeriodo.length === 1 ? (
-                  <p className="mt-1 text-3xl font-semibold tracking-tight text-minerva-black">
-                    {formatMoney(
-                      ventaPorMoneda.get(monedasPeriodo[0]!)?.total ?? 0,
-                      monedasPeriodo[0] as 'CRC' | 'USD',
-                    )}
-                  </p>
-                ) : (
-                  <>
-                    <p className="mt-1 text-3xl font-semibold tracking-tight text-minerva-black">
-                      {monedasPeriodo.length} monedas
-                    </p>
-                    <ul className="mt-3 space-y-1">
-                      {/*
-                        Sin columna de código: `formatMoney` ya escribe "₡" o
-                        "USD", y poner las dos cosas repetía el código dos veces.
-                      */}
-                      {monedasPeriodo.map((c) => (
-                        <li key={c} className="flex items-baseline justify-between gap-3">
-                          <span className="text-sm font-semibold text-neutral-800">
-                            {formatMoney(ventaPorMoneda.get(c)?.total ?? 0, c as 'CRC' | 'USD')}
-                          </span>
-                          <span className="text-xs text-minerva-muted">
-                            {ventaPorMoneda.get(c)?.cantidad ?? 0}{' '}
-                            {(ventaPorMoneda.get(c)?.cantidad ?? 0) === 1
-                              ? 'oportunidad'
-                              : 'oportunidades'}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-                <p className="mt-3 text-sm text-neutral-700">
-                  {oportunidadesCerradasPeriodo}{' '}
-                  {oportunidadesCerradasPeriodo === 1 ? 'oportunidad ganada' : 'oportunidades ganadas'}{' '}
-                  {oportunidadesCerradasPeriodo === 1 ? 'cerrada' : 'cerradas'} en el período. {' '}
-                  {oportunidadesPerdidas}{' '}
-                  {oportunidadesPerdidas === 1 ? 'oportunidad perdida' : 'oportunidades perdidas'}{' '}
-                  en total.
-                </p>
-                {puedeVerCotizaciones && (
-                  <p className="mt-1 text-sm text-neutral-700">
-                    {cotizacionesPeriodo}{' '}
-                    {cotizacionesPeriodo === 1
-                      ? 'cotización generada'
-                      : 'cotizaciones generadas'}{' '}
-                    en el período.
-                  </p>
-                )}
-              </>
-            )}
+              <ul className="mt-2 space-y-1.5">
+                {monedasPeriodo.map((c) => (
+                  <li key={c} className="flex items-baseline justify-between gap-3">
+                    <span className="text-sm font-semibold text-neutral-800">
+                      {formatMoney(ventaPorMoneda.get(c)?.total ?? 0, c as 'CRC' | 'USD')}
+                    </span>
+                    <span className="text-xs text-minerva-muted">
+                      {ventaPorMoneda.get(c)?.cantidad ?? 0}{' '}
+                      {(ventaPorMoneda.get(c)?.cantidad ?? 0) === 1
+                        ? 'oportunidad'
+                        : 'oportunidades'}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="text-sm text-minerva-muted">
+              {monedasPeriodo.length === 0
+                ? 'No hay oportunidades ganadas cerradas en este período.'
+                : `${oportunidadesCerradasPeriodo} ${
+                    oportunidadesCerradasPeriodo === 1
+                      ? 'oportunidad ganada cerrada'
+                      : 'oportunidades ganadas cerradas'
+                  } en el período.`}
+            </p>
+          )}
+          <p className="mt-2 text-sm text-neutral-700">
+            {oportunidadesPerdidas}{' '}
+            {oportunidadesPerdidas === 1 ? 'oportunidad perdida' : 'oportunidades perdidas'} en
+            total.
+          </p>
         </div>
       </section>
 
@@ -440,7 +524,7 @@ export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
                 }))}
               />
             )}
-            <BarrasVerticales
+            <AreaTendencia
               titulo="Ventas ganadas por mes"
               subtitulo={`${ventanaTitulo(ventanaVentas)} · ${
                 monedasVentana.length > 0
@@ -448,6 +532,7 @@ export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
                   : 'sin ventas ganadas en la ventana'
               }`}
               series={['Monto vendido']}
+              colores={[PALETA.esmeralda]}
               puntos={serieVentas.map((p) => ({
                 etiqueta: etiquetaBucket(p.clave, 'mes'),
                 valor: p.valor,
@@ -469,17 +554,27 @@ export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
               Ver el tablero completo →
             </Link>
           </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {kpisEtapas.map((k) => (
+              <Kpi
+                key={k.etiqueta}
+                icon={k.icono}
+                etiqueta={k.etiqueta}
+                valor={k.valor}
+                href={k.href}
+                color={k.color}
+              />
+            ))}
+          </div>
           <div className="grid gap-4 lg:grid-cols-2">
-            <BarrasEtapas
+            <Dona
               titulo="Distribución actual"
-              subtitulo="Cantidad de oportunidades en cada etapa del proceso comercial."
-              filas={filasEtapas.map((e) => ({
+              subtitulo="Oportunidades en cada etapa del proceso comercial."
+              centroTexto="oportunidades"
+              segmentos={filasEtapas.map((e) => ({
                 etiqueta: e.nombre,
                 valor: e.cantidad,
-                ancho: e.cantidad,
-                esMeta: e.esMeta,
-                esPerdida: e.esPerdida,
-                secundario: montoDeEtapa(e),
+                color: e.esMeta ? PALETA.esmeralda : e.esPerdida ? PALETA.gris : undefined,
               }))}
             />
             <BarrasEtapas
@@ -522,23 +617,6 @@ export default async function DashboardPage({ searchParams }: PageProps<'/'>) {
         </section>
       )}
     </div>
-  );
-}
-
-function Tarjeta({ etiqueta, valor, href }: Fila) {
-  const clases = 'rounded-lg border border-minerva-border bg-minerva-white p-4 shadow-sm';
-  const contenido = (
-    <>
-      <p className="text-sm text-minerva-muted">{etiqueta}</p>
-      <p className="mt-1 text-2xl font-semibold text-minerva-black">{valor}</p>
-    </>
-  );
-  return href ? (
-    <Link href={href} className={`${clases} transition-colors hover:border-minerva-red`}>
-      {contenido}
-    </Link>
-  ) : (
-    <div className={clases}>{contenido}</div>
   );
 }
 

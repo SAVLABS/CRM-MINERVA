@@ -11,6 +11,7 @@ import {
   OPPORTUNITY_STATUS_LABELS,
   QUOTATION_STATUS_LABELS,
 } from '@/lib/labels';
+import { PALETA } from '@/lib/paleta';
 
 /**
  * RF-11: consultas y reportes.
@@ -76,6 +77,24 @@ export type TotalReporte = {
   cantidad?: number;
 };
 
+export type SegmentoGrafico = { etiqueta: string; valor: number; color?: string };
+export type FilaGrafico = {
+  etiqueta: string;
+  valor: number;
+  secundario: string;
+  esMeta?: boolean;
+  esPerdida?: boolean;
+};
+
+/**
+ * Gráfico listo para pintar. Los reportes los arman con conteos (nunca suman
+ * montos de monedas distintas) y la página los dibuja con los componentes de
+ * `@/components/charts`; así el estilo es el mismo del panel.
+ */
+export type GraficoReporte =
+  | { tipo: 'dona'; titulo: string; subtitulo: string; centro: string; segmentos: SegmentoGrafico[] }
+  | { tipo: 'barras'; titulo: string; subtitulo: string; filas: FilaGrafico[] };
+
 export type Reporte = {
   tipo: TipoReporte;
   titulo: string;
@@ -84,6 +103,8 @@ export type Reporte = {
   columnas: ColumnaReporte[];
   filas: FilaReporte[];
   totales: TotalReporte[];
+  /** Gráficos del reporte, en orden de lectura. */
+  graficos: GraficoReporte[];
   /** Notas al pie: límites del reporte o del filtro aplicado. */
   notas: string[];
 };
@@ -121,6 +142,46 @@ const numero = (n: number) => String(Math.round((n + Number.EPSILON) * 100) / 10
 
 const nombreCompleto = (u: { firstName: string; lastName: string }) =>
   `${u.firstName} ${u.lastName}`.trim();
+
+/**
+ * Cuenta filas por el valor de una columna y devuelve las `limite` categorías
+ * con más registros. Se usa para los gráficos de barras: contar es seguro con
+ * cualquier mezcla de monedas (un conteo no se suma en dinero).
+ */
+function contarPor(
+  filas: FilaReporte[],
+  clave: string,
+  limite = 8,
+): { etiqueta: string; valor: number }[] {
+  const conteo = new Map<string, number>();
+  for (const f of filas) {
+    const k = String(f[clave] ?? '—');
+    conteo.set(k, (conteo.get(k) ?? 0) + 1);
+  }
+  return [...conteo.entries()]
+    .map(([etiqueta, valor]) => ({ etiqueta, valor }))
+    .sort((a, b) => b.valor - a.valor)
+    .slice(0, limite);
+}
+
+/** Barras de conteo con el porcentaje del total como dato secundario. */
+function barrasDeConteo(
+  titulo: string,
+  subtitulo: string,
+  items: { etiqueta: string; valor: number }[],
+): GraficoReporte {
+  const total = items.reduce((a, i) => a + i.valor, 0);
+  return {
+    tipo: 'barras',
+    titulo,
+    subtitulo,
+    filas: items.map((i) => ({
+      etiqueta: i.etiqueta,
+      valor: i.valor,
+      secundario: total > 0 ? `${Math.round((i.valor / total) * 100)}%` : '0%',
+    })),
+  };
+}
 
 export function esTipoReporte(v: string): v is TipoReporte {
   return (TIPOS_REPORTE as readonly string[]).includes(v);
@@ -279,6 +340,26 @@ async function reporteVentas(f: FiltrosReporte): Promise<Reporte> {
         oportunidades.map((o) => ({ moneda: o.currency, monto: Number(o.amount) })),
       ),
     ],
+    graficos: [
+      {
+        tipo: 'dona',
+        titulo: 'Ventas por moneda',
+        subtitulo: 'Registros ganados según la moneda (no se suman entre sí).',
+        centro: 'ventas',
+        segmentos: Object.values(Currency)
+          .map((c) => ({
+            etiqueta: c,
+            valor: oportunidades.filter((o) => o.currency === c).length,
+            color: c === Currency.CRC ? PALETA.azul : PALETA.ambar,
+          }))
+          .filter((s) => s.valor > 0),
+      },
+      barrasDeConteo(
+        'Ventas por responsable',
+        'Cuántas oportunidades ganó cada comercial.',
+        contarPor(filas, 'responsable'),
+      ),
+    ],
     notas,
   };
 }
@@ -358,6 +439,31 @@ async function reporteOportunidades(f: FiltrosReporte): Promise<Reporte> {
         oportunidades.map((o) => ({ moneda: o.currency, monto: Number(o.amount) })),
       ),
     ],
+    graficos: [
+      {
+        tipo: 'dona',
+        titulo: 'Oportunidades por estado',
+        subtitulo: 'Reparto de las oportunidades del filtro según su estado.',
+        centro: 'oportunidades',
+        segmentos: Object.values(OpportunityStatus)
+          .map((e) => ({
+            etiqueta: OPPORTUNITY_STATUS_LABELS[e],
+            valor: porEstado.get(e) ?? 0,
+            color:
+              e === OpportunityStatus.WON
+                ? PALETA.esmeralda
+                : e === OpportunityStatus.LOST
+                  ? PALETA.gris
+                  : PALETA.azul,
+          }))
+          .filter((s) => s.valor > 0),
+      },
+      barrasDeConteo(
+        'Oportunidades por etapa',
+        'Cuántas oportunidades hay en cada etapa del proceso.',
+        contarPor(filas, 'etapa'),
+      ),
+    ],
     notas: ['El rango de fechas aplica a la creación de la oportunidad, no a su cierre.'],
   };
 }
@@ -434,6 +540,35 @@ async function reporteCotizaciones(f: FiltrosReporte): Promise<Reporte> {
       })),
       ...totalesPorMoneda(
         cotizaciones.map((q) => ({ moneda: q.currency, monto: Number(q.total) })),
+      ),
+    ],
+    graficos: [
+      {
+        tipo: 'dona',
+        titulo: 'Cotizaciones por estado',
+        subtitulo: 'Reparto de las cotizaciones del filtro según su estado.',
+        centro: 'cotizaciones',
+        segmentos: Object.values(QuotationStatus)
+          .map((e) => ({
+            etiqueta: QUOTATION_STATUS_LABELS[e],
+            valor: porEstado.get(e) ?? 0,
+            color:
+              e === QuotationStatus.ACCEPTED
+                ? PALETA.esmeralda
+                : e === QuotationStatus.REJECTED
+                  ? PALETA.rojo
+                  : e === QuotationStatus.DRAFT
+                    ? PALETA.gris
+                    : e === QuotationStatus.EXPIRED
+                      ? PALETA.ambar
+                      : PALETA.azul,
+          }))
+          .filter((s) => s.valor > 0),
+      },
+      barrasDeConteo(
+        'Cotizaciones por cliente',
+        'Clientes con más cotizaciones en el rango.',
+        contarPor(filas, 'cliente'),
       ),
     ],
     notas: ['El filtro de usuario responsable usa quién creó la cotización, no el comercial asignado.'],
@@ -563,6 +698,34 @@ async function reporteClientes(f: FiltrosReporte): Promise<Reporte> {
             },
           ]
         : []),
+    ],
+    graficos: [
+      {
+        tipo: 'dona',
+        titulo: 'Clientes por estado',
+        subtitulo: 'Reparto entre clientes activos e inactivos.',
+        centro: 'clientes',
+        segmentos: [
+          {
+            etiqueta: 'Activos',
+            valor: clientes.filter((c) => c.isActive).length,
+            color: PALETA.esmeralda,
+          },
+          {
+            etiqueta: 'Inactivos',
+            valor: clientes.filter((c) => !c.isActive).length,
+            color: PALETA.gris,
+          },
+        ].filter((s) => s.valor > 0),
+      },
+      barrasDeConteo(
+        'Clientes por oportunidades',
+        'Clientes con más oportunidades registradas.',
+        clientes
+          .map((c) => ({ etiqueta: c.name, valor: c._count.opportunities }))
+          .sort((a, b) => b.valor - a.valor)
+          .slice(0, 8),
+      ),
     ],
     notas: [
       'El filtro por usuario responsable muestra los clientes con al menos una oportunidad a nombre de ese usuario.',
